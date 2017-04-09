@@ -1,8 +1,10 @@
 import os
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, session, jsonify
 from flask import render_template, url_for, redirect, send_from_directory
 from flask import send_file, make_response, abort
+
+from flask.ext.session import Session
 
 from angular_flask import app
 
@@ -14,13 +16,14 @@ for model_name in app.config['API_MODELS']:
     model_class = app.config['API_MODELS'][model_name]
     api_manager.create_api(model_class, methods=['GET', 'POST'])
 
-session = api_manager.session
+api_session = api_manager.session
 
 
 # routing for basic pages (pass routing onto the Angular app)
 @app.route('/')
 @app.route('/about')
 @app.route('/blog')
+@app.route('/login')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -35,14 +38,40 @@ crud_url_models = app.config['CRUD_URL_MODELS']
 @app.route('/<model_name>/')
 @app.route('/<model_name>/<item_id>')
 def rest_pages(model_name, item_id=None):
-    if model_name in crud_url_models:
-        model_class = crud_url_models[model_name]
-        if item_id is None or session.query(exists().where(
-                model_class.id == item_id)).scalar():
-            return make_response(open(
-                'angular_flask/templates/index.html').read())
+    if session.get('logged_in') is True:
+        if model_name in crud_url_models:
+            model_class = crud_url_models[model_name]
+            print "querying " + model_name
+            print model_class
+            print model_class.__dict__
+            if item_id is None or api_session.query(exists().where(
+                    model_class.CourseID == item_id)).scalar():
+                return make_response(open(
+                    'angular_flask/templates/index.html').read())
     abort(404)
 
+@app.route('/api/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+
+        json_data = request.get_json()
+        print "JSON DATA ====\n\n"
+        print json_data
+        user = User.query.filter_by(login=json_data['username']).first()
+        if user and user.password in json_data['password']:
+            session['logged_in'] = True
+            status = True
+        else:
+            status = False
+        return jsonify({'result': status})
+    else:
+        return render_template('login.html')
+
+@app.route('/_session')
+def get_from_session():
+    key = request.args['key']
+    print session.get(key)
+    return str(session.get(key))
 
 # special file handlers and error handlers
 @app.route('/favicon.ico')

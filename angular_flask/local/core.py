@@ -1,0 +1,1 @@
+/home/auriga/angular-flask/angular_flask/core.py

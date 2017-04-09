@@ -1,6 +1,12 @@
 'use strict';
 
-angular.module('AngularFlask', ['angularFlaskServices'])
+angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
+	.run(function($window) {
+		console.log('run init')
+		if(!$window.sessionStorage.logged_in) {
+			$window.sessionStorage.logged_in = 'false';
+		}
+	})
 	.config(['$routeProvider', '$locationProvider',
 		function($routeProvider, $locationProvider) {
 		$routeProvider
@@ -12,18 +18,26 @@ angular.module('AngularFlask', ['angularFlaskServices'])
 			templateUrl: 'static/partials/about.html',
 			controller: AboutController
 		})
-		.when('/post', {
-			templateUrl: 'static/partials/post-list.html',
-			controller: PostListController
+		.when('/course', {
+			templateUrl: 'static/partials/course-list.html',
+			controller: CourseListController
 		})
-		.when('/post/:postId', {
-			templateUrl: '/static/partials/post-detail.html',
-			controller: PostDetailController
+		.when('/course/:CourseID', {
+			templateUrl: '/static/partials/course-detail.html',
+			controller: CourseDetailController
 		})
 		/* Create a "/blog" route that takes the user to the same place as "/post" */
 		.when('/blog', {
-			templateUrl: 'static/partials/post-list.html',
-			controller: PostListController
+			templateUrl: 'static/partials/course-list.html',
+			controller: CourseListController
+		})
+		.when('/login', {
+			templateUrl: 'static/partials/login.html',
+			controller: LoginController
+		})
+		.when('/logout', {
+			templateUrl: 'static/partials/landing.html',
+			controller: LogoutController
 		})
 		.otherwise({
 			redirectTo: '/'
