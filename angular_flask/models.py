@@ -2,7 +2,7 @@ from datetime import datetime
 
 from angular_flask.core import db
 from angular_flask import app
-
+import json
 
 # class Post(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
@@ -59,6 +59,10 @@ class User(db.Model):
     LastName = db.Column(db.String(20))
     userType = db.Column(db.String(20))
 
+    def __call__(arg1, arg2, arg3):
+        print "call user"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
     def __init__(self, UserID, login, password, FirstName, LastName, userType):
         self.UserID = UserID
         self.login = login
@@ -68,7 +72,15 @@ class User(db.Model):
         self.userType = userType
 
     def __repr__(self):
-        return '<user %r>' % self.login
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'UserID': self.UserID,
+            'login': self.login,
+            'FirstName': self.FirstName,
+            'LastName': self.LastName,
+            'userType': self.userType
+        })
+
 # models for which we want to create API endpoints
 app.config['API_MODELS'] = {'course': Course, 'page': Page, 'user': User}
 

@@ -12,6 +12,26 @@ from angular_flask import app
 from angular_flask.core import api_manager
 from angular_flask.models import *
 
+from flask.json import JSONEncoder
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, User):
+            # Implement code to convert Passport object to a dict
+            user_dict = {
+                'UserID': obj.UserID,
+                'login': obj.login,
+                'FirstName': obj.FirstName,
+                'LastName': obj.LastName,
+                'userType': obj.userType
+            }
+            return user_dict
+        else:
+            JSONEncoder.default(self, obj)
+
+# Now tell Flask to use the custom class
+app.json_encoder = CustomJSONEncoder
+
 for model_name in app.config['API_MODELS']:
     model_class = app.config['API_MODELS'][model_name]
     api_manager.create_api(model_class, methods=['GET', 'POST'])
@@ -58,12 +78,18 @@ def login():
         print "JSON DATA ====\n\n"
         print json_data
         user = User.query.filter_by(login=json_data['username']).first()
+        print user
+        #do hashing here
         if user and user.password in json_data['password']:
-            session['logged_in'] = True
+            session['logged_in'] = user
             status = True
         else:
+            session['logged_in'] = None
             status = False
-        return jsonify({'result': status})
+        return jsonify({
+            'result': status,
+            'user': session['logged_in']
+        })
     else:
         return render_template('login.html')
 

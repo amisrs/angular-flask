@@ -48,8 +48,8 @@ create table certification(
 insert into course values(1, 'intro to git gud', 'how 2 git gud?');
 insert into page values(1, 1, 1, 'git gud first page', 'hey guys this is the first page for intro to git gud');
 
-insert into course values(2, 'intro to meguca', 'being meguca is suffering?');
-insert into page values(2, 2, 1, 'meguca first', 'hey guys this is the first page for intro to meguca');
+insert into course values(2, 'intro to magic', 'being meguca is suffering');
+insert into page values(2, 2, 1, 'magic first', 'hey guys this is the first page for intro to magic');
 
 insert into user values(1, 'amisrs', 'plaintext', 'Ami', 'Srs', 'admin');
 insert into admin values(1, 1);

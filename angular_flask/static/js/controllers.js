@@ -5,7 +5,7 @@
 function IndexController($scope, $http, $window) {
 	console.log("loggedin at index: " + $window.sessionStorage.logged_in)
 
-	if($window.sessionStorage.logged_in == 'true') {
+	if($window.sessionStorage.logged_in_status === true) {
 		$scope.logged_in = true;
 	} else {
 		$scope.logged_in = false;
@@ -17,8 +17,9 @@ function AboutController($scope) {
 }
 
 function CourseListController($scope, Course, $http, $location, $window) {
+	console.log("controllers.js - CourseListController: logged_in_status = " + $window.sessionStorage.logged_in_status);
 	console.log("loggedin at course list: " + $window.sessionStorage.logged_in)
-	if($window.sessionStorage.logged_in == 'true') {
+	if($window.sessionStorage.logged_in_status === 'true') {
 		console.log('getting course list');
 		var coursesQuery = Course.get({}, function(courses) {
 			$scope.courses = courses.objects;
@@ -39,7 +40,7 @@ function CourseDetailController($scope, $routeParams, Course, $http) {
 }
 
 function LoginController($scope, $http, $location, $window, $rootScope) {
-	if($window.sessionStorage.logged_in == 'true') {
+	if($window.sessionStorage.logged_in_status === 'true') {
 		$location.path('/course')
 	}
 
@@ -51,12 +52,16 @@ function LoginController($scope, $http, $location, $window, $rootScope) {
 		$http.post('/api/login', {'username': username, 'password': password})
 		.success(function(data, status) {
 			if(status === 200 && data.result) {
-				console.log("login success")
-				console.log(data.result)
-				$window.sessionStorage.setItem("logged_in", data.result)
+				console.log("login successas");
+				console.log(data.user);
+				$window.sessionStorage.setItem("logged_in", JSON.stringify(data.user));
+				console.log("controllers.js - LoginController: Setting localstorage user: " + $window.sessionStorage.logged_in);
+				$window.sessionStorage.setItem("logged_in_status", true)
+
 				$rootScope.$broadcast('login-change');
 				$location.path('/course/')
 			} else {
+				console.log("login failed")
 				console.log(data.result)
 			}
 		})
@@ -64,8 +69,11 @@ function LoginController($scope, $http, $location, $window, $rootScope) {
 }
 
 function LogoutController($scope, $location, $window, $route, $rootScope) {
-	if($window.sessionStorage.logged_in == 'true') {
-		$window.sessionStorage.logged_in = 'false';
+	console.log("controller.js - LogoutController");
+	if($window.sessionStorage.logged_in_status === 'true') {
+		$window.sessionStorage.setItem("logged_in_status", false);
+		$window.sessionStorage.setItem("logged_in", null);
+
 	}
 	$rootScope.$broadcast('login-change');
 	$location.path('/')
