@@ -15,9 +15,13 @@ angular.module('angularDirectives', [])
 
     if($scope.logged_in_status === 'true') {
       $scope.href = '/logout';
+      $scope.login_text = 'Hello ' + JSON.parse($scope.logged_in).login;
+
     } else {
       $scope.href = '/login';
+      $scope.login_text = 'Login';
     }
+
 
     console.log("directives.js - updateLogin: href is " + $scope.href);
   }
@@ -33,6 +37,6 @@ angular.module('angularDirectives', [])
   console.log('login directive')
   return {
     restrict: 'E',
-    template: '<a href="{{ href }}">Hello {{ logged_in }}</a>'
+    template: "<a href='{{ href }}'> {{ login_text }}</a>"
   };
 });

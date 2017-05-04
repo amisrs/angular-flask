@@ -2,7 +2,7 @@
 
 angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 	.run(function($window) {
-		console.log('run init')
+		console.log('app.js - run init')
 		if(!$window.sessionStorage.logged_in) {
 			$window.sessionStorage.logged_in = 'false';
 		}
@@ -38,6 +38,17 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 		.when('/logout', {
 			templateUrl: 'static/partials/landing.html',
 			controller: LogoutController
+		})
+		.when('/admin', {
+			templateUrl: '/static/partials/admin.html',
+		})
+		.when('/admin/create_user', {
+			templateUrl: '/static/partials/create_user.html',
+			controller: CreateUserController
+		})
+		.when('/home', {
+			templateUrl: 'static/partials/login.html',
+			controller: HomeController
 		})
 		.otherwise({
 			redirectTo: '/'

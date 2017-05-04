@@ -16,6 +16,16 @@ function AboutController($scope) {
 
 }
 
+function HomeController($scope, $location, $window) {
+	console.log("controllers.js - HomeController: phoning home...");
+	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
+	if(userType === 'admin') {
+		$location.path('/admin');
+	} else {
+		$location.path('/course');
+	}
+}
+
 function CourseListController($scope, Course, $http, $location, $window) {
 	console.log("controllers.js - CourseListController: logged_in_status = " + $window.sessionStorage.logged_in_status);
 	console.log("loggedin at course list: " + $window.sessionStorage.logged_in)
@@ -40,9 +50,6 @@ function CourseDetailController($scope, $routeParams, Course, $http) {
 }
 
 function LoginController($scope, $http, $location, $window, $rootScope) {
-	if($window.sessionStorage.logged_in_status === 'true') {
-		$location.path('/course')
-	}
 
 	$scope.login = function() {
 		console.log("ANGULAR LOGIN");
@@ -59,7 +66,7 @@ function LoginController($scope, $http, $location, $window, $rootScope) {
 				$window.sessionStorage.setItem("logged_in_status", true)
 
 				$rootScope.$broadcast('login-change');
-				$location.path('/course/')
+				$location.path('/home')
 			} else {
 				console.log("login failed")
 				console.log(data.result)
@@ -76,5 +83,29 @@ function LogoutController($scope, $location, $window, $route, $rootScope) {
 
 	}
 	$rootScope.$broadcast('login-change');
-	$location.path('/')
+	$location.path('/');
+}
+
+function CreateUserController($scope, $http, $location, $window) {
+	console.log("controller.js - CreateUserController");
+	if($window.sessionStorage.logged_in_status === 'true' && JSON.parse($window.sessionStorage.logged_in).userType === 'admin') {
+		console.log("Accessing create_user as admin");
+	} else {
+		console.log("Accessing create_user as non-admin");
+		$location.path('/');
+	}
+
+	$scope.create_user = function() {
+		var username = $scope.username;
+		var password = $scope.password;
+		var userType = $scope.userType;
+
+		$http.post('/api/user/create', {'username': username, 'password': password, 'userType': userType})
+			.success(function(data, status) {
+				if(status === 200) {
+					console.log("controllers.js - CreateUserController create_user: SUCCESS");
+					$location.path('/')
+				}
+			});
+	}
 }

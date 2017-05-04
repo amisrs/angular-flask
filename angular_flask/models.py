@@ -63,13 +63,13 @@ class User(db.Model):
         print "call user"
         #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
 
-    def __init__(self, UserID, login, password, FirstName, LastName, userType):
+    def __init__(self, UserID, login, password, userType, FirstName=None, LastName=None):
         self.UserID = UserID
         self.login = login
         self.password = password
+        self.userType = userType
         self.FirstName = FirstName
         self.LastName = LastName
-        self.userType = userType
 
     def __repr__(self):
         #return '<user %r>' % (self.login + '-' + str(self.UserID))

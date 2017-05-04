@@ -1,5 +1,7 @@
+SET sql_mode = '';
+
 create table user(
-  UserID INT,
+  UserID INT NOT NULL AUTO_INCREMENT,
   login VARCHAR(20),
   password VARCHAR(80),
 	FirstName VARCHAR(20),
@@ -9,29 +11,29 @@ create table user(
 );
 
 create table student(
-	StudentID INT,
+	StudentID INT NOT NULL AUTO_INCREMENT,
 	UserID INT NOT NULL,
   PRIMARY KEY(StudentID),
   FOREIGN KEY(UserID) REFERENCES user(UserID) ON DELETE CASCADE
 );
 
 create table admin(
-	AdminID INT,
+	AdminID INT NOT NULL AUTO_INCREMENT,
 	UserID INT NOT NULL,
   PRIMARY KEY(AdminID),
 	FOREIGN KEY(UserID) REFERENCES user(UserID) ON DELETE CASCADE
 );
 
 create table course(
-	CourseID INT,
+	CourseID INT NOT NULL AUTO_INCREMENT,
 	title VARCHAR(80),
   description VARCHAR(80),
   PRIMARY KEY(CourseID)
 );
 
 create table page(
+  PageID INT NOT NULL AUTO_INCREMENT,
   CourseID INT,
-  PageID INT,
   pageInCourse INT,
   title VARCHAR(80),
   content VARCHAR(5000),
@@ -45,14 +47,14 @@ create table certification(
   FOREIGN KEY(StudentID) REFERENCES student(StudentID)
 );
 
-insert into course values(1, 'intro to git gud', 'how 2 git gud?');
-insert into page values(1, 1, 1, 'git gud first page', 'hey guys this is the first page for intro to git gud');
+insert into course values(null, 'intro to git gud', 'how 2 git gud?');
+insert into page values(null, 1, 1, 'git gud first page', 'hey guys this is the first page for intro to git gud');
 
-insert into course values(2, 'intro to magic', 'being meguca is suffering');
-insert into page values(2, 2, 1, 'magic first', 'hey guys this is the first page for intro to magic');
+insert into course values(null, 'intro to magic', 'being meguca is suffering');
+insert into page values(null, 2, 1, 'magic first', 'hey guys this is the first page for intro to magic');
 
-insert into user values(1, 'amisrs', 'plaintext', 'Ami', 'Srs', 'admin');
-insert into admin values(1, 1);
+insert into user values(null, 'amisrs', 'plaintext', 'Ami', 'Srs', 'admin');
+insert into admin values(null, 1);
 
-insert into user values(2, 'cooby', 'plaintext', 'cooby', 'rabu', 'student');
-insert into student values(1, 2);
+insert into user values(null, 'cooby', 'plaintext', 'cooby', 'rabu', 'student');
+insert into student values(null, 2);

@@ -44,6 +44,8 @@ api_session = api_manager.session
 @app.route('/about')
 @app.route('/blog')
 @app.route('/login')
+@app.route('/admin')
+@app.route('/admin/create_user')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -75,7 +77,7 @@ def login():
     if request.method == 'POST':
 
         json_data = request.get_json()
-        print "JSON DATA ====\n\n"
+        print "controllers.py - /api/route POST : JSON DATA ====\n\n"
         print json_data
         user = User.query.filter_by(login=json_data['username']).first()
         print user
@@ -92,6 +94,23 @@ def login():
         })
     else:
         return render_template('login.html')
+
+@app.route('/api/user/create', methods=['POST'])
+def create_user():
+    json_data = request.get_json()
+    print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
+    print json_data
+    new_user = User(None, json_data['username'], json_data['password'], json_data['userType'])
+    db.session.add(new_user)
+    db.session.commit()
+    return render_template('index.html')
+
+@app.route('/api/user/', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    print users
+    return render_template('index.html')
+
 
 @app.route('/_session')
 def get_from_session():
