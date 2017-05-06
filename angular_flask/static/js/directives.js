@@ -9,9 +9,6 @@ angular.module('angularDirectives', [])
   var updateLogin = function() {
     $scope.logged_in_status = $window.sessionStorage.logged_in_status;
     $scope.logged_in = $window.sessionStorage.logged_in;
-    console.log("updateLogin:");
-    console.log("scope.logged_in: " + $scope.logged_in);
-    console.log("scope.logged_in_status: " + $scope.logged_in_status);
 
     if($scope.logged_in_status === 'true') {
       $scope.href = '/logout';
@@ -23,7 +20,6 @@ angular.module('angularDirectives', [])
     }
 
 
-    console.log("directives.js - updateLogin: href is " + $scope.href);
   }
 
   updateLogin();
@@ -43,7 +39,7 @@ angular.module('angularDirectives', [])
 .directive('coursesByCategory', function() {
   return {
     restrict: 'E',
-    template: "<h2>{{ category }}</h2><div ng-repeat=\"course in courses\"><h4><a href=\"/course/{{ course.CourseID }}\">{{ course.title }}</a></h4><p>{{ course.description }}<p></div>"
+    template: "<h2>{{ category }}</h2>{{ emptyMessage }}<div ng-repeat=\"course in courses\"><h4><a href=\"/course/{{ course.CourseID }}\">{{ course.title }}</a></h4><p>{{ course.description }}<p></div>"
   }
 })
 .directive('userSnippet', function() {

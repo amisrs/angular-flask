@@ -2,13 +2,17 @@
 	<h2>{{ course.title | uppercase }}</h2>
 	<h4>{{ course.description }}</h4>
 
-	<div ng-show="!isEnrolled">
+	<div ng-if="!isEnrolled">
 		<form ng-submit="enrol()">
 			<input type="submit" value="Enrol">
 		</form>
 	</div>
 
-	<div ng-show="isEnrolled">
+	<div ng-if="isEnrolled">
+		<form ng-submit="unenrol()">
+			<input type="submit" value="Leave">
+		</form>
+
 		Enrolled!
 		Here's all the stuff that's shown when you're enrolled.
 	</div>

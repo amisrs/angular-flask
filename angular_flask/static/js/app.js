@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
+angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ngRoute'])
 	.run(function($window) {
 		console.log('app.js - run init')
 		if(!$window.sessionStorage.logged_in) {
@@ -12,47 +12,46 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 		$routeProvider
 		.when('/', {
 			templateUrl: 'static/partials/landing.html',
-			controller: IndexController
+			controller: 'IndexController'
 		})
 		.when('/about', {
 			templateUrl: 'static/partials/about.html',
-			controller: AboutController
 		})
 		.when('/course', {
-			templateUrl: 'static/partials/course_big_list.html',
-			controller: CourseListController
+			templateUrl: 'static/partials/student_home.html',
+			controller: 'StudentHomeController'
 		})
 		.when('/course/:CourseID', {
 			templateUrl: '/static/partials/course-detail.html',
-			controller: CourseDetailController
+			controller: 'CourseDetailController'
 		})
 		/* Create a "/blog" route that takes the user to the same place as "/post" */
 		.when('/blog', {
 			templateUrl: 'static/partials/course-list.html',
-			controller: CourseListController
+			controller: 'CourseListController'
 		})
 		.when('/login', {
 			templateUrl: 'static/partials/login.html',
-			controller: LoginController
+			controller: 'LoginController'
 		})
 		.when('/logout', {
 			templateUrl: 'static/partials/landing.html',
-			controller: LogoutController
+			controller: 'LogoutController'
 		})
 		.when('/admin', {
 			templateUrl: '/static/partials/admin.html',
 		})
 		.when('/admin/create_user', {
 			templateUrl: '/static/partials/create_user.html',
-			controller: CreateUserController
+			controller: 'CreateUserController'
 		})
 		.when('/admin/create_course', {
 			templateUrl: '/static/partials/create_course.html',
-			controller: CreateCourseController
+			controller: 'CreateCourseController'
 		})
 		.when('/home', {
 			templateUrl: 'static/partials/login.html',
-			controller: HomeController
+			controller: 'HomeController'
 		})
 		.otherwise({
 			redirectTo: '/'

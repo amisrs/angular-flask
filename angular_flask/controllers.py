@@ -123,6 +123,37 @@ def create_user():
 
     return render_template('index.html')
 
+@app.route('/api/user/<user_id>/course', methods=['GET'])
+def get_enrolled_courses(user_id):
+    courses = []
+    print "controllers.py - getting enrolled courses"
+    student = Student.query.filter(Student.UserID == user_id).all()[0]
+    enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
+    for enrolment in enrolled_courses:
+        print 'student ' + str(student.StudentID) + ' enrolled in ' + str(enrolment)
+        course = Course.query.filter(Course.CourseID == enrolment.CourseID).all()[0];
+        courses.append(course)
+    return str(courses)
+
+@app.route('/api/user/<user_id>/unenrolled', methods=['GET'])
+def get_not_enrolled_courses(user_id):
+    courses = []
+    print "controllers.py - getting not enrolled courses"
+    student = Student.query.filter(Student.UserID == user_id).all()[0]
+    enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
+    for enrolment in enrolled_courses:
+        course = Course.query.filter(Course.CourseID == enrolment.CourseID).all()[0];
+        courses.append(course.CourseID)
+    all_courses = Course.query.all()
+    all_courses_iter = all_courses
+    for course in all_courses_iter[:]:
+        if course.CourseID in courses:
+            all_courses.remove(course)
+    print "THESE ARE THE COURSES YOURE NOT ENROLLED IN"
+    print str(all_courses)
+    return str(all_courses)
+
+
 @app.route('/api/course/', methods=['GET'])
 def get_courses():
     courses = Course.query.all()
@@ -157,6 +188,19 @@ def enrol(courseid):
             .filter(Enrolment.StudentID == student.StudentID)\
             .filter(Enrolment.CourseID == courseid).all()
         return str(len(enrolment) > 0)
+
+@app.route('/api/course/<courseid>/unenrol', methods=['POST', 'GET'])
+def unenrol(courseid):
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    if request.method == 'POST':
+        new_enrolment = Enrolment.query\
+            .filter(Enrolment.StudentID == student.StudentID)\
+            .filter(Enrolment.CourseID == int(courseid)).first()
+        print new_enrolment
+        db.session.delete(new_enrolment)
+        db.session.commit()
+    return "OK"
+
 
 @app.route('/_session')
 def get_from_session():

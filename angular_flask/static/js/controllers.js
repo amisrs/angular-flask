@@ -1,22 +1,17 @@
 'use strict';
 
 /* Controllers */
-
-function IndexController($scope, $http, $window) {
-	console.log("loggedin at index: " + $window.sessionStorage.logged_in)
+var app = angular.module('AngularFlask');
+app.controller('IndexController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
+	console.log("loggedin at index: " + $window.sessionStorage.logged_in);
 
 	if($window.sessionStorage.logged_in_status === 'true') {
 		$scope.logged_in = true;
 	} else {
 		$scope.logged_in = false;
 	}
-}
-
-function AboutController($scope) {
-
-}
-
-function HomeController($scope, $location, $window) {
+}])
+.controller('HomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - HomeController: phoning home...");
 	if($window.sessionStorage.logged_in_status === 'true') {
 		var userType = JSON.parse($window.sessionStorage.logged_in).userType;
@@ -28,9 +23,11 @@ function HomeController($scope, $location, $window) {
 	} else {
 		$location.path('/login');
 	}
-}
-
-function LoginController($scope, $http, $location, $window, $rootScope) {
+}])
+.controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
+	console.log("controllers.js - StudentHomeController: phoning home...");
+}])
+.controller('LoginController', ['$scope', '$http', '$location', '$window', '$rootScope', function ($scope, $http, $location, $window, $rootScope) {
 
 	$scope.login = function() {
 		console.log("ANGULAR LOGIN");
@@ -38,25 +35,19 @@ function LoginController($scope, $http, $location, $window, $rootScope) {
 		var password = $scope.password;
 
 		$http.post('/api/login', {'username': username, 'password': password})
-		.success(function(data, status) {
-			if(status === 200 && data.result) {
-				console.log("login successas");
-				console.log(data.user);
-				$window.sessionStorage.setItem("logged_in", JSON.stringify(data.user));
+		.then(function(success) {
+				$window.sessionStorage.setItem("logged_in", JSON.stringify(success.data.user));
 				console.log("controllers.js - LoginController: Setting localstorage user: " + $window.sessionStorage.logged_in);
 				$window.sessionStorage.setItem("logged_in_status", true)
 
 				$rootScope.$broadcast('login-change');
 				$location.path('/home')
-			} else {
-				console.log("login failed")
-				console.log(data.result)
-			}
+		}, function(error) {
+				console.log(error);
 		})
 	}
-}
-
-function LogoutController($scope, $location, $window, $route, $rootScope) {
+}])
+.controller('LogoutController', ['$scope', '$location', '$window', '$route', '$rootScope', function ($scope, $location, $window, $route, $rootScope) {
 	console.log("controller.js - LogoutController");
 	if($window.sessionStorage.logged_in_status === 'true') {
 		$window.sessionStorage.setItem("logged_in_status", false);
@@ -65,9 +56,8 @@ function LogoutController($scope, $location, $window, $route, $rootScope) {
 	}
 	$rootScope.$broadcast('login-change');
 	$location.path('/');
-}
-
-function CreateUserController($scope, $http, $location, $window) {
+}])
+.controller('CreateUserController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
 	console.log("controller.js - CreateUserController");
 	if($window.sessionStorage.logged_in_status === 'true' && JSON.parse($window.sessionStorage.logged_in).userType === 'admin') {
 		console.log("Accessing create_user as admin");
@@ -82,18 +72,17 @@ function CreateUserController($scope, $http, $location, $window) {
 		var userType = $scope.userType;
 
 		$http.post('/api/user/create', {'username': username, 'password': password, 'userType': userType})
-			.success(function(data, status) {
+			.then(function(data, status) {
 				if(status === 200) {
-					console.log("controllers.js - CreateUserController create_user: SUCCESS");
+					console.log("controllers.js - CreateUserController create_user: then");
 					$location.path('/home')
 				}
 			});
 	}
-}
-
-function UserListController($scope, $http, $window) {
+}])
+.controller('UserListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
 	$http.get('/api/user')
-	.success(function(data, status) {
+	.then(function(data, status) {
 		if(status === 200 && data) {
 			$scope.users = data;
 		} else {
@@ -101,4 +90,4 @@ function UserListController($scope, $http, $window) {
 			console.log("controllers.js - UserListController: failed to get User list");
 		}
 	})
-}
+}]);
