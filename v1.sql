@@ -24,6 +24,13 @@ create table admin(
 	FOREIGN KEY(UserID) REFERENCES user(UserID) ON DELETE CASCADE
 );
 
+create table supervisor(
+  SupervisorID INT NOT NULL AUTO_INCREMENT,
+  UserID INT NOT NULL,
+  PRIMARY KEY(SupervisorID),
+  FOREIGN KEY(UserID) REFERENCES user(UserID) ON DELETE CASCADE
+);
+
 create table course(
 	CourseID INT NOT NULL AUTO_INCREMENT,
 	title VARCHAR(80),
@@ -40,9 +47,10 @@ create table page(
   PRIMARY KEY(PageID)
 );
 
-create table certification(
+create table enrolment(
   CourseID INT NOT NULL,
   StudentID INT NOT NULL,
+  status VARCHAR(80),
   FOREIGN KEY(CourseID) REFERENCES course(CourseID),
   FOREIGN KEY(StudentID) REFERENCES student(StudentID)
 );

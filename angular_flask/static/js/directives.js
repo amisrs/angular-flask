@@ -39,4 +39,16 @@ angular.module('angularDirectives', [])
     restrict: 'E',
     template: "<a href='{{ href }}'> {{ login_text }}</a>"
   };
+})
+.directive('coursesByCategory', function() {
+  return {
+    restrict: 'E',
+    template: "<h2>{{ category }}</h2><div ng-repeat=\"course in courses\"><h4><a href=\"/course/{{ course.CourseID }}\">{{ course.title }}</a></h4><p>{{ course.description }}<p></div>"
+  }
+})
+.directive('userSnippet', function() {
+  return {
+    restrict: 'E',
+    template: "<b>{{ user.login }}:</b> {{ user.userType }}"
+  }
 });

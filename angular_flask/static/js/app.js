@@ -19,7 +19,7 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 			controller: AboutController
 		})
 		.when('/course', {
-			templateUrl: 'static/partials/course-list.html',
+			templateUrl: 'static/partials/course_big_list.html',
 			controller: CourseListController
 		})
 		.when('/course/:CourseID', {
@@ -60,5 +60,7 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 		;
 
 		$locationProvider.html5Mode(true);
+		$locationProvider.hashPrefix("");
+
 	}])
 ;

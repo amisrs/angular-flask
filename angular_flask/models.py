@@ -44,6 +44,7 @@ class Course(db.Model):
             'category': self.category
         })
 
+
 class Page(db.Model):
     PageID = db.Column(db.Integer, primary_key=True)
     CourseID = db.Column(db.Integer)
@@ -91,9 +92,50 @@ class User(db.Model):
             'userType': self.userType
         })
 
+class Student(db.Model):
+    StudentID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer)
+
+    def __call__(arg1, arg2, arg3):
+        print "call user"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, StudentID, UserID):
+        self.StudentID = StudentID
+        self.UserID = UserID
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'StudentID': self.StudentID,
+            'UserID': self.UserID,
+        })
+
+class Enrolment(db.Model):
+    StudentID = db.Column(db.Integer, primary_key=True)
+    CourseID = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(80))
+
+    def __call__(arg1, arg2, arg3):
+        print "call enrolment"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, StudentID, CourseID, status):
+        self.StudentID = StudentID
+        self.CourseID = CourseID
+        self.status = status
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'StudentID': self.StudentID,
+            'CourseID': self.CourseID,
+            'status': self.status
+        })
+
 # models for which we want to create API endpoints
-app.config['API_MODELS'] = {'course': Course, 'page': Page, 'user': User}
+app.config['API_MODELS'] = {'course': Course, 'page': Page, 'user': User, 'student': Student, 'enrolment': Enrolment}
 
 # models for which we want to create CRUD-style URL endpoints,
 # and pass the routing onto our AngularJS application
-app.config['CRUD_URL_MODELS'] = {'course': Course, 'page': Page, 'user': User}
+app.config['CRUD_URL_MODELS'] = {'course': Course, 'page': Page, 'user': User, 'student': Student, 'enrolment': Enrolment}

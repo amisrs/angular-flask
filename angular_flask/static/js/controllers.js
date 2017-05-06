@@ -30,36 +30,6 @@ function HomeController($scope, $location, $window) {
 	}
 }
 
-function CourseListController($scope, Course, $http, $location, $window) {
-	console.log("controllers.js - CourseListController: logged_in_status = " + $window.sessionStorage.logged_in_status);
-	console.log("loggedin at course list: " + $window.sessionStorage.logged_in)
-	if($window.sessionStorage.logged_in_status === 'true') {
-		console.log('getting course list');
-		$http.get('/api/course')
-		.success(function(data, status) {
-			if(status === 200 && data) {
-				console.log('course list: ' + data);
-				$scope.courses = data;
-			} else {
-				console.log(status);
-				console.log("controllers.js - CourseListController: failed to get Course list");
-			}
-		})
-
-	} else {
-		console.log('not logged in')
-		$location.path('/login')
-	}
-}
-
-function CourseDetailController($scope, $routeParams, Course, $http) {
-	var courseQuery = Course.get({ CourseID: $routeParams.CourseID }, function(course) {
-		$scope.course = course;
-	});
-
-	//get the stuff from first page here
-}
-
 function LoginController($scope, $http, $location, $window, $rootScope) {
 
 	$scope.login = function() {
@@ -103,7 +73,7 @@ function CreateUserController($scope, $http, $location, $window) {
 		console.log("Accessing create_user as admin");
 	} else {
 		console.log("Accessing create_user as non-admin");
-		$location.path('/');
+		$location.path('/home');
 	}
 
 	$scope.create_user = function() {
@@ -115,32 +85,20 @@ function CreateUserController($scope, $http, $location, $window) {
 			.success(function(data, status) {
 				if(status === 200) {
 					console.log("controllers.js - CreateUserController create_user: SUCCESS");
-					$location.path('/')
+					$location.path('/home')
 				}
 			});
 	}
 }
 
-function CreateCourseController($scope, $http, $location, $window) {
-	console.log("controller.js - CreateCourseController");
-	if($window.sessionStorage.logged_in_status === 'true' && JSON.parse($window.sessionStorage.logged_in).userType === 'admin') {
-		console.log("Accessing create_course as admin");
-	} else {
-		console.log("Accessing create_course as non-admin");
-		$location.path('/');
-	}
-
-	$scope.create_course = function() {
-		var title = $scope.title;
-		var description = $scope.description;
-		var category = $scope.category;
-
-		$http.post('/api/course/create', {'title': title, 'description': description, 'category': category})
-			.success(function(data, status) {
-				if(status === 200) {
-					console.log("controllers.js - CreateCourseController create_course: SUCCESS");
-					$location.path('/')
-				}
-			});
-	}
+function UserListController($scope, $http, $window) {
+	$http.get('/api/user')
+	.success(function(data, status) {
+		if(status === 200 && data) {
+			$scope.users = data;
+		} else {
+			console.log(status);
+			console.log("controllers.js - UserListController: failed to get User list");
+		}
+	})
 }
