@@ -24,15 +24,25 @@ class Course(db.Model):
     CourseID = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     description = db.Column(db.String(80))
+    category = db.Column(db.String(80))
 
-    def __init__(self, CourseID, title, description):
+    def __call__(arg1, arg2, arg3):
+        print "call course"
+
+    def __init__(self, CourseID, title, description, category):
         self.CourseID = CourseID
         self.title = title
         self.description = description
+        self.category = category
 
 
     def __repr__(self):
-        return '<course %r>' % self.title
+        return json.dumps({
+            'CourseID': self.CourseID,
+            'title': self.title,
+            'description': self.description,
+            'category': self.category
+        })
 
 class Page(db.Model):
     PageID = db.Column(db.Integer, primary_key=True)

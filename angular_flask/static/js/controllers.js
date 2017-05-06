@@ -5,7 +5,7 @@
 function IndexController($scope, $http, $window) {
 	console.log("loggedin at index: " + $window.sessionStorage.logged_in)
 
-	if($window.sessionStorage.logged_in_status === true) {
+	if($window.sessionStorage.logged_in_status === 'true') {
 		$scope.logged_in = true;
 	} else {
 		$scope.logged_in = false;
@@ -18,11 +18,15 @@ function AboutController($scope) {
 
 function HomeController($scope, $location, $window) {
 	console.log("controllers.js - HomeController: phoning home...");
-	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
-	if(userType === 'admin') {
-		$location.path('/admin');
+	if($window.sessionStorage.logged_in_status === 'true') {
+		var userType = JSON.parse($window.sessionStorage.logged_in).userType;
+		if(userType === 'admin') {
+			$location.path('/admin');
+		} else {
+			$location.path('/course');
+		}
 	} else {
-		$location.path('/course');
+		$location.path('/login');
 	}
 }
 
@@ -31,10 +35,17 @@ function CourseListController($scope, Course, $http, $location, $window) {
 	console.log("loggedin at course list: " + $window.sessionStorage.logged_in)
 	if($window.sessionStorage.logged_in_status === 'true') {
 		console.log('getting course list');
-		var coursesQuery = Course.get({}, function(courses) {
-			$scope.courses = courses.objects;
-			console.log('got course objects ' + courses.objects);
-		});
+		$http.get('/api/course')
+		.success(function(data, status) {
+			if(status === 200 && data) {
+				console.log('course list: ' + data);
+				$scope.courses = data;
+			} else {
+				console.log(status);
+				console.log("controllers.js - CourseListController: failed to get Course list");
+			}
+		})
+
 	} else {
 		console.log('not logged in')
 		$location.path('/login')
@@ -104,6 +115,30 @@ function CreateUserController($scope, $http, $location, $window) {
 			.success(function(data, status) {
 				if(status === 200) {
 					console.log("controllers.js - CreateUserController create_user: SUCCESS");
+					$location.path('/')
+				}
+			});
+	}
+}
+
+function CreateCourseController($scope, $http, $location, $window) {
+	console.log("controller.js - CreateCourseController");
+	if($window.sessionStorage.logged_in_status === 'true' && JSON.parse($window.sessionStorage.logged_in).userType === 'admin') {
+		console.log("Accessing create_course as admin");
+	} else {
+		console.log("Accessing create_course as non-admin");
+		$location.path('/');
+	}
+
+	$scope.create_course = function() {
+		var title = $scope.title;
+		var description = $scope.description;
+		var category = $scope.category;
+
+		$http.post('/api/course/create', {'title': title, 'description': description, 'category': category})
+			.success(function(data, status) {
+				if(status === 200) {
+					console.log("controllers.js - CreateCourseController create_course: SUCCESS");
 					$location.path('/')
 				}
 			});

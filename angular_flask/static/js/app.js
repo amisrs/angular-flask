@@ -46,6 +46,10 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives'])
 			templateUrl: '/static/partials/create_user.html',
 			controller: CreateUserController
 		})
+		.when('/admin/create_course', {
+			templateUrl: '/static/partials/create_course.html',
+			controller: CreateCourseController
+		})
 		.when('/home', {
 			templateUrl: 'static/partials/login.html',
 			controller: HomeController

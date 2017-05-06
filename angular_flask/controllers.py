@@ -46,6 +46,7 @@ api_session = api_manager.session
 @app.route('/login')
 @app.route('/admin')
 @app.route('/admin/create_user')
+@app.route('/course')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -57,20 +58,20 @@ from sqlalchemy.sql import exists
 crud_url_models = app.config['CRUD_URL_MODELS']
 
 
-@app.route('/<model_name>/')
-@app.route('/<model_name>/<item_id>')
-def rest_pages(model_name, item_id=None):
-    if session.get('logged_in') is True:
-        if model_name in crud_url_models:
-            model_class = crud_url_models[model_name]
-            print "querying " + model_name
-            print model_class
-            print model_class.__dict__
-            if item_id is None or api_session.query(exists().where(
-                    model_class.CourseID == item_id)).scalar():
-                return make_response(open(
-                    'angular_flask/templates/index.html').read())
-    abort(404)
+# @app.route('/<model_name>/')
+# @app.route('/<model_name>/<item_id>')
+# def rest_pages(model_name, item_id=None):
+#     if session.get('logged_in') is True:
+#         if model_name in crud_url_models:
+#             model_class = crud_url_models[model_name]
+#             print "querying " + model_name
+#             print model_class
+#             print model_class.__dict__
+#             if item_id is None or api_session.query(exists().where(
+#                     model_class.CourseID == item_id)).scalar():
+#                 return make_response(open(
+#                     'angular_flask/templates/index.html').read())
+#     abort(404)
 
 @app.route('/api/login', methods=['POST', 'GET'])
 def login():
@@ -95,6 +96,12 @@ def login():
     else:
         return render_template('login.html')
 
+@app.route('/api/user/', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    print users
+    return render_template('index.html')
+
 @app.route('/api/user/create', methods=['POST'])
 def create_user():
     json_data = request.get_json()
@@ -105,12 +112,21 @@ def create_user():
     db.session.commit()
     return render_template('index.html')
 
-@app.route('/api/user/', methods=['GET'])
-def get_users():
-    users = User.query.all()
-    print users
-    return render_template('index.html')
+@app.route('/api/course/', methods=['GET'])
+def get_courses():
+    courses = Course.query.all()
+    print str(courses)
+    return str(courses)
 
+@app.route('/api/course/create', methods=['POST'])
+def create_course():
+    json_data = request.get_json()
+    print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
+    print json_data
+    new_course = Course(None, json_data['title'], json_data['description'], json_data['category'])
+    db.session.add(new_course)
+    db.session.commit()
+    return render_template('index.html')
 
 @app.route('/_session')
 def get_from_session():
