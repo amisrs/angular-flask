@@ -48,6 +48,19 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 		$location.path('/login')
 	}
 }])
+.controller('AllCourseListController', ['$scope', '$http', '$location', '$window', function($scope, $http, $location, $window) {
+	$scope.courses = [];
+	if($window.sessionStorage.logged_in_status === 'true') {
+		$http.get('/api/course')
+			.then(function(success) {
+				$scope.courses = success.data;
+				console.log($scope.courses);
+
+			}, function(error) {
+				console.log(error);
+			})
+	}
+}])
 .controller('EnrolledCourseListController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
 	if($window.sessionStorage.logged_in_status === 'true') {
 		console.log(JSON.parse($window.sessionStorage.logged_in).UserID);
@@ -63,6 +76,8 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 	}
 }])
 .controller('CourseCategoryController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
+	$scope.courses = [];
+
 	var unenrolled_course_endpoint = '/api/user/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/unenrolled';
 	$scope.empty = { value: false };
 	$scope.emptyMessage = "";
@@ -113,7 +128,7 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
     console.log("controllers.js - CourseListController: failed to get Course list");
   })
 }])
-.controller('CourseDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', function ($scope, $routeParams, Course, $http, $window, $location) {
+.controller('CourseDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
 	$scope.isEnrolled = false;
 	var course_endpoint = '';
 	var course_unenrol_endpoint = '';
@@ -139,7 +154,7 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 		console.log("controllers-course.js - " + course_endpoint);
 		$http.post(course_endpoint, {'UserID': $window.sessionStorage.logged_in.UserID })
 			.then(function(success) {
-				$location.path('/home');
+				$route.reload();
 			}, function(error) {
 				console.log(error);
 			});

@@ -39,7 +39,19 @@ angular.module('angularDirectives', [])
 .directive('coursesByCategory', function() {
   return {
     restrict: 'E',
-    template: "<h2>{{ category }}</h2>{{ emptyMessage }}<div ng-repeat=\"course in courses\"><h4><a href=\"/course/{{ course.CourseID }}\">{{ course.title }}</a></h4><p>{{ course.description }}<p></div>"
+    template: "<h2>{{ category }}</h2>{{ emptyMessage }}<category-carousel></category-carousel>"
+  }
+})
+.directive('categoryCarousel', function() {
+  return {
+    restrict: 'E',
+    template: "<carousel><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
+  }
+})
+.directive('allCarousel', function() {
+  return {
+    restrict: 'E',
+    template: "<carousel><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
   }
 })
 .directive('userSnippet', function() {

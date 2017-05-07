@@ -1,8 +1,9 @@
 <div>
   <h1> HELLO ADMIN </h1>
-  <p><a href='admin/create_user'> Create user </a></p>
   <div ng-controller="UserListController" ng-include src="'static/partials/user_list.html'"></div>
+  <p><a href='admin/create_user'> Create user </a></p>
 
+  <!--<div ng-controller="AllCourseListController" ng-include src="'static/partials/all_courses_list.html'"></div>-->
+  <all-carousel ng-controller="AllCourseListController"></all-carousel>
   <p><a href='admin/create_course'> Create course </a></p>
-  <div ng-controller="CourseListController" ng-include src="'static/partials/course_big_list.html'"></div>
 </div>

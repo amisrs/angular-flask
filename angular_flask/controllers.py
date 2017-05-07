@@ -44,14 +44,18 @@ api_session = api_manager.session
 @app.route('/about')
 @app.route('/blog')
 @app.route('/login')
-@app.route('/admin')
 @app.route('/course')
 @app.route('/course/<course_id>')
 @app.route('/home')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
-
+@app.route('/admin')
+def admin_pages(**kwargs):
+    if session['logged_in']['userType'] == 'admin':
+        return make_response(open('angular_flask/templates/index.html').read())
+    else:
+        return redirect('/')
 # routing for CRUD-style endpoints
 # passes routing onto the angular frontend if the requested resource exists
 from sqlalchemy.sql import exists

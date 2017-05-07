@@ -82,12 +82,10 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('UserListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
 	$http.get('/api/user')
-	.then(function(data, status) {
-		if(status === 200 && data) {
-			$scope.users = data;
-		} else {
-			console.log(status);
-			console.log("controllers.js - UserListController: failed to get User list");
-		}
-	})
+	.then(function(success) {
+			$scope.users = success.data;
+	}, function(error) {
+		console.log(error);
+		console.log("controllers.js - UserListController: failed to get User list");
+	});
 }]);
