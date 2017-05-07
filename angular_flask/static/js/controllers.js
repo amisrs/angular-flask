@@ -87,7 +87,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		var LastName = $scope.LastName;
 		var password = $scope.password;
 
-		$http.post('/api/user/create', {'username': username, 'password': password, 'userType': 'student'})
+		$http.post('/api/user/create', {'username': username, 'FirstName': FirstName, 'LastName': LastName, 'password': password, 'userType': 'student'})
 			.then(function(success) {
 				console.log("controllers.js - CreateUserController create_user: then");
 				$location.path('/home');

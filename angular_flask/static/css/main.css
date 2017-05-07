@@ -60,6 +60,8 @@
 }
 .carousel-control.left, .carousel-control.right {
 	background-image: none;
+	z-index: 100;
+
 }
 .carousel-indicators {
   top: 8px;
@@ -124,3 +126,54 @@
 	-webkit-box-shadow: 6px 6px 10px -5px rgba(0,0,0,0.75);
 	-moz-box-shadow: 6px 6px 10px -5px rgba(0,0,0,0.75);
 	box-shadow: 6px 6px 10px -5px rgba(0,0,0,0.75);
+}
+
+.big-carousel div img{
+	max-width:100%;
+	max-height:100%;
+
+	background-size:100% 100%;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	opacity: 1;
+
+}
+
+.bignity {
+	margin: 0px;
+	width: 100%;
+	padding: 0px;
+}
+
+.overlay {
+  color:#fff;
+  position:absolute;
+	display: block;
+
+  z-index:12;
+  top:37%;
+  left:0;
+  width:100%;
+  text-align:center;
+	text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
+	color: white;
+}
+.big-page {
+	text-align: center;
+}
+.image-container {
+	background-color: #000000;
+}
+.no-margin {
+	margin: 0px;
+}
+
+.img-circle {
+    border-radius: 50%;
+}

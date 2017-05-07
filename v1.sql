@@ -38,6 +38,7 @@ create table course(
 	CourseID INT NOT NULL AUTO_INCREMENT,
 	title VARCHAR(80),
   description VARCHAR(80),
+  header_image VARCHAR(1000),
   PRIMARY KEY(CourseID)
 );
 

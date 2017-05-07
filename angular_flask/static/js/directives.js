@@ -3,8 +3,13 @@
 /* Directives */
 
 angular.module('angularDirectives', [])
-.controller('login-controller', ['$scope', '$window', function($scope, $window) {
+.controller('login-controller', ['$scope', '$window', '$location', function($scope, $window, $location) {
   console.log('login-controller')
+  console.log($location.path());
+  $scope.showNavbar = true;
+  if($location.path === '/') {
+    $scope.showNavbar = false;
+  }
 
   var updateLogin = function() {
     $scope.logged_in_status = $window.sessionStorage.logged_in_status;
@@ -63,7 +68,7 @@ angular.module('angularDirectives', [])
 .directive('studentTable', function() {
   return {
     restrict: 'E',
-    template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>Ongoing Courses</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
+    template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>First Name</th><th>Last Name</th><th>Ongoing Courses</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
   }
 })
 .directive('disableAnimation', function($animate){

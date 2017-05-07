@@ -1,21 +1,37 @@
-<div>
-	<h2>{{ course.title | uppercase }}</h2>
-	<h4>{{ course.description }}</h4>
+<a class="btn btn-link" href="/course/">back</a>
+<!-- <p><a href="/course/">back</a></p> -->
 
-	<div ng-if="!isEnrolled">
-		<form ng-submit="enrol()">
-			<input type="submit" value="Enrol">
-		</form>
+<div class="jumbotron">
+	hey
+</div>
+
+<div class="container">
+
+	<div class="row">
+		<div class="col-md-10">
+			<h2>{{ course.title }}</h2>
+		</div>
+		<div class="col-md-2 pull-right" ng-if="!isEnrolled">
+			<form ng-submit="enrol()">
+				<input class="btn btn-success header-button" type="submit" value="Enrol">
+			</form>
+		</div>
+		<div class="col-md-2 pull-right" ng-if="isEnrolled">
+			<form ng-submit="unenrol()">
+				<input class="btn btn-danger header-button" type="submit" value="Leave">
+			</form>
+		</div>
 	</div>
-
-	<div ng-if="isEnrolled">
-		<form ng-submit="unenrol()">
-			<input type="submit" value="Leave">
-		</form>
+	<div class="row">
+		<div class="col-md-12">
+			<h4>{{ course.description }}</h4>
+		</div>
+	</div>
+	<div class="row" ng-if="isEnrolled">
+		<hr>
 
 		Enrolled!
 		Here's all the stuff that's shown when you're enrolled.
 	</div>
 
-	<p><a href="/course/">back</a></p>
 </div>

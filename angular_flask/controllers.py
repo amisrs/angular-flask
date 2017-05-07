@@ -118,7 +118,7 @@ def create_user():
     json_data = request.get_json()
     print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
     print json_data
-    new_user = User(None, json_data['username'], json_data['password'], json_data['userType'])
+    new_user = User(None, json_data['username'], json_data['password'], json_data['userType'], json_data['FirstName'], json_data['LastName'])
     try:
         db.session.add(new_user)
         db.session.commit()
