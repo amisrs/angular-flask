@@ -41,7 +41,16 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 		// })
 
 		// get unique categories from db instead of this crap
-		$scope.categories = ['programming', 'magic'];
+
+		// $scope.categories = ['programming', 'magic'];
+		$http.get('/api/course/category')
+			.then(function(success) {
+				console.log($scope.categories);
+				$scope.categories = success.data.cat_list;
+				console.log($scope.categories);
+			}, function(error) {
+				console.log(error);
+			})
 
 	} else {
 		console.log('not logged in')

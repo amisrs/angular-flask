@@ -10,6 +10,8 @@ angular.module('angularDirectives', [])
   if($location.path === '/') {
     $scope.showNavbar = false;
   }
+  $scope.location = $location.path();
+
 
   var updateLogin = function() {
     $scope.logged_in_status = $window.sessionStorage.logged_in_status;
@@ -17,8 +19,8 @@ angular.module('angularDirectives', [])
 
     if($scope.logged_in_status === 'true') {
       $scope.href = '/logout';
-      $scope.login_text = 'Hello ' + JSON.parse($scope.logged_in).login;
-
+      // $scope.login_text = 'Hello ' + JSON.parse($scope.logged_in).login;
+      $scope.login_text = 'Logout';
     } else {
       $scope.href = '/login';
       $scope.login_text = 'Login';

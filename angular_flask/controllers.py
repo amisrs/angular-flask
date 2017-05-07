@@ -187,6 +187,18 @@ def get_courses():
     courses = Course.query.all()
     return str(courses)
 
+@app.route('/api/course/category', methods=['GET'])
+def get_categories():
+    resp = {}
+    categories = []
+    query = db.session.query(Course.category.distinct().label("category"))
+    for row in query.all():
+        categories.append(row.category.encode('utf-8'))
+    resp['cat_list'] = categories
+    print str(categories)
+    return jsonify(resp)
+
+
 @app.route('/api/course/create', methods=['POST'])
 def create_course():
     json_data = request.get_json()
