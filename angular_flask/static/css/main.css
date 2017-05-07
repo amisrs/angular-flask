@@ -58,3 +58,25 @@
   text-decoration: none;
   text-shadow: 0 1px 0 #ffffff;
 }
+
+.carousel-indicators {
+  top: 8px;
+	height: 8px;
+}
+.carousel-control .icon-prev, .carousel-control .icon-next, .carousel-control, .carousel-control:hover {
+    color: #808080;
+}
+
+.cardback {
+	height: 120px;
+	background-color: #383D52;
+}
+
+.cardfront {
+	background-color: #FFFFFF;
+}
+
+.header-button {
+	margin-top: 20px;
+	margin-bottom: 10px;
+}

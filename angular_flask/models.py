@@ -94,26 +94,63 @@ class User(db.Model):
 
 class Student(db.Model):
     StudentID = db.Column(db.Integer, primary_key=True)
-    UserID = db.Column(db.Integer)
+    UserID = db.Column(db.Integer, db.ForeignKey('user.UserID'))
+    SupervisorID = db.Column(db.Integer, db.ForeignKey('supervisor.SupervisorID'))
 
     def __call__(arg1, arg2, arg3):
-        print "call user"
+        print "call student"
         #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
 
-    def __init__(self, StudentID, UserID):
+    def __init__(self, StudentID, UserID, SupervisorID):
         self.StudentID = StudentID
         self.UserID = UserID
+        self.SupervisorID = SupervisorID
 
     def __repr__(self):
         #return '<user %r>' % (self.login + '-' + str(self.UserID))
         return json.dumps({
             'StudentID': self.StudentID,
             'UserID': self.UserID,
+            'SupervisorID': self.SupervisorID
+        })
+
+class Supervisor(db.Model):
+    SupervisorID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('user.UserID'))
+
+    def __call__(arg1, arg2, arg3):
+        print "call supervisor"
+
+    def __init__(self, SupervisorID, UserID):
+        self.SupervisorID = SupervisorID
+        self.UserID = UserID
+
+    def __repr__(self):
+        return json.dumps({
+            'SupervisorID': self.SupervisorID,
+            'UserID': self.UserID,
+        })
+
+class Admin(db.Model):
+    AdminID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('user.UserID'))
+
+    def __call__(arg1, arg2, arg3):
+        print "call admin"
+
+    def __init__(self, AdminID, UserID):
+        self.AdminID = AdminID
+        self.UserID = UserID
+
+    def __repr__(self):
+        return json.dumps({
+            'AdminID': self.AdminID,
+            'UserID': self.UserID,
         })
 
 class Enrolment(db.Model):
-    StudentID = db.Column(db.Integer, primary_key=True)
-    CourseID = db.Column(db.Integer, primary_key=True)
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
+    CourseID = db.Column(db.Integer, db.ForeignKey('course.CourseID'), primary_key=True)
     status = db.Column(db.String(80))
 
     def __call__(arg1, arg2, arg3):
@@ -134,8 +171,24 @@ class Enrolment(db.Model):
         })
 
 # models for which we want to create API endpoints
-app.config['API_MODELS'] = {'course': Course, 'page': Page, 'user': User, 'student': Student, 'enrolment': Enrolment}
+app.config['API_MODELS'] = {
+                                'course': Course,
+                                'page': Page,
+                                'user': User,
+                                'student': Student,
+                                'supervisor': Supervisor,
+                                'admin': Admin,
+                                'enrolment': Enrolment
+                            }
 
 # models for which we want to create CRUD-style URL endpoints,
 # and pass the routing onto our AngularJS application
-app.config['CRUD_URL_MODELS'] = {'course': Course, 'page': Page, 'user': User, 'student': Student, 'enrolment': Enrolment}
+app.config['CRUD_URL_MODELS'] = {
+                                    'course': Course,
+                                    'page': Page,
+                                    'user': User,
+                                    'student': Student,
+                                    'supervisor': Supervisor,
+                                    'admin': Admin,
+                                    'enrolment': Enrolment
+                                }

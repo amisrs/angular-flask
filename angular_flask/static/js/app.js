@@ -25,14 +25,13 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			templateUrl: '/static/partials/course-detail.html',
 			controller: 'CourseDetailController'
 		})
-		/* Create a "/blog" route that takes the user to the same place as "/post" */
-		.when('/blog', {
-			templateUrl: 'static/partials/course-list.html',
-			controller: 'CourseListController'
-		})
 		.when('/login', {
 			templateUrl: 'static/partials/login.html',
 			controller: 'LoginController'
+		})
+		.when('/students', {
+			templateUrl: 'static/partials/supervisor_home.html',
+			controller: 'SupervisorHomeController'
 		})
 		.when('/logout', {
 			templateUrl: 'static/partials/landing.html',

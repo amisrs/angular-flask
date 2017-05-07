@@ -59,4 +59,10 @@ angular.module('angularDirectives', [])
     restrict: 'E',
     template: "<b>{{ user.login }}:</b> {{ user.userType }}"
   }
+})
+.directive('studentTable', function() {
+  return {
+    restrict: 'E',
+    template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>Ongoing Courses</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
+  }
 });

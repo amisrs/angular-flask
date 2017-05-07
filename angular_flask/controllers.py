@@ -47,10 +47,12 @@ api_session = api_manager.session
 @app.route('/course')
 @app.route('/course/<course_id>')
 @app.route('/home')
+@app.route('/students')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
 @app.route('/admin')
+@app.route('/admin/create_user')
 def admin_pages(**kwargs):
     if session['logged_in']['userType'] == 'admin':
         return make_response(open('angular_flask/templates/index.html').read())
@@ -122,11 +124,20 @@ def create_user():
             new_student = Student(None, inserted_user.UserID)
             db.session.add(new_student)
             db.session.commit()
+        elif json_data['userType'] == 'supervisor':
+            new_supervisor = Supervisor(None, inserted_user.UserID)
+            db.session.add(new_supervisor)
+            db.session.commit()
+        elif json_data['userType'] == 'admin':
+            new_admin = Admin(None, inserted_user.UserID)
+            db.session.add(new_admin)
+            db.session.commit()
     except Exception as e:
         print "probably duplicate login: " + str(e)
 
-    return render_template('index.html')
+    return "OK"
 
+# probably change these to /api/student
 @app.route('/api/user/<user_id>/course', methods=['GET'])
 def get_enrolled_courses(user_id):
     courses = []
@@ -157,6 +168,14 @@ def get_not_enrolled_courses(user_id):
     print str(all_courses)
     return str(all_courses)
 
+#return a list of students for this supervisor
+@app.route('/api/supervisor/<user_id>/student', methods=['GET'])
+def get_supervisor_students(user_id):
+    students = []
+    supervisor = Supervisor.query.filter(Supervisor.UserID == user_id).all()[0]
+    students = db.session.query(User).join(Student).filter(Student.SupervisorID == supervisor.SupervisorID).all()
+    print str(students)
+    return str(students)
 
 @app.route('/api/course/', methods=['GET'])
 def get_courses():

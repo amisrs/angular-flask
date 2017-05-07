@@ -13,8 +13,11 @@ create table user(
 create table student(
 	StudentID INT NOT NULL AUTO_INCREMENT,
 	UserID INT NOT NULL,
+  SupervisorID INT NOT NULL,
   PRIMARY KEY(StudentID),
   FOREIGN KEY(UserID) REFERENCES user(UserID) ON DELETE CASCADE
+  FOREIGN KEY(SupervisorID) REFERENCES supervisor(SupervisorID) ON DELETE CASCADE
+
 );
 
 create table admin(

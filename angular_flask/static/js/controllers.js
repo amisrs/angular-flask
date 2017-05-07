@@ -17,8 +17,10 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		var userType = JSON.parse($window.sessionStorage.logged_in).userType;
 		if(userType === 'admin') {
 			$location.path('/admin');
-		} else {
+		} else if(userType === 'student') {
 			$location.path('/course');
+		} else if(userType === 'supervisor') {
+			$location.path('/students');
 		}
 	} else {
 		$location.path('/login');
@@ -26,6 +28,9 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - StudentHomeController: phoning home...");
+}])
+.controller('SupervisorHomeController', ['$scope', '$location', '$window', function($scope, $location, $window) {
+	console.log("controllers.js - SupervisorHomeController: phoning home...");
 }])
 .controller('LoginController', ['$scope', '$http', '$location', '$window', '$rootScope', function ($scope, $http, $location, $window, $rootScope) {
 
@@ -72,11 +77,11 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		var userType = $scope.userType;
 
 		$http.post('/api/user/create', {'username': username, 'password': password, 'userType': userType})
-			.then(function(data, status) {
-				if(status === 200) {
-					console.log("controllers.js - CreateUserController create_user: then");
-					$location.path('/home')
-				}
+			.then(function(success) {
+				console.log("controllers.js - CreateUserController create_user: then");
+				$location.path('/home');
+			}, function(error) {
+				console.log(error);
 			});
 	}
 }])
@@ -88,4 +93,34 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		console.log(error);
 		console.log("controllers.js - UserListController: failed to get User list");
 	});
+}])
+.controller('StudentListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
+	var endpoint = '/api/supervisor/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/student'
+	$http.get(endpoint)
+		.then(function(success) {
+			console.log("students");
+			console.log(success);
+
+			$scope.students = [];
+			for(var i = success.data.length - 1; i >= 0; i--) {
+				console.log(i);
+				var current_student = success.data[i];
+				get_enrolled_courses(current_student);
+				console.log(current_student);
+				$scope.students.push(current_student);
+			}
+		}, function(error) {
+			console.log(error);
+		});
+
+		var get_enrolled_courses = function(current_student) {
+			$http.get('/api/user/' + current_student.UserID + '/course')
+				.then(function(success) {
+					console.log("enroleld courses for: " + current_student.login);
+					console.log(success.data);
+					current_student.enrolled_courses = success.data;
+				}, function(error) {
+					console.log(error);
+				});
+		}
 }]);
