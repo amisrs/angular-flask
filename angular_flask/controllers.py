@@ -110,6 +110,11 @@ def get_users():
 
 @app.route('/api/user/create', methods=['POST'])
 def create_user():
+    creator = session['logged_in']
+    if creator['userType'] == 'supervisor':
+        supervisor = Supervisor.query.filter(Supervisor.UserID == creator['UserID']).all()[0]
+
+
     json_data = request.get_json()
     print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
     print json_data
@@ -117,11 +122,11 @@ def create_user():
     try:
         db.session.add(new_user)
         db.session.commit()
-
+        print "USER CREATED OK"
         inserted_user = User.query.filter(User.login == json_data['username']).all()[0]
         print inserted_user
         if json_data['userType'] == 'student':
-            new_student = Student(None, inserted_user.UserID)
+            new_student = Student(None, inserted_user.UserID, supervisor.SupervisorID)
             db.session.add(new_student)
             db.session.commit()
         elif json_data['userType'] == 'supervisor':

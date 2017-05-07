@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ngRoute', 'ui.bootstrap', 'angular-carousel', 'ngTouch'])
+angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ngRoute', 'ui.bootstrap', 'angular-carousel', 'ngTouch', 'ngAnimate'])
 	.run(function($window) {
 		console.log('app.js - run init')
 		if(!$window.sessionStorage.logged_in) {

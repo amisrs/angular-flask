@@ -31,6 +31,16 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('SupervisorHomeController', ['$scope', '$location', '$window', function($scope, $location, $window) {
 	console.log("controllers.js - SupervisorHomeController: phoning home...");
+	$scope.isShowingNew = false;
+
+	$scope.showNew = function() {
+		console.log("SHOW NEW");
+		$scope.isShowingNew = true;
+	}
+	$scope.hideNew = function() {
+		console.log("HIDE NEW");
+		$scope.isShowingNew = false;
+	}
 }])
 .controller('LoginController', ['$scope', '$http', '$location', '$window', '$rootScope', function ($scope, $http, $location, $window, $rootScope) {
 
@@ -61,6 +71,32 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 	}
 	$rootScope.$broadcast('login-change');
 	$location.path('/');
+}])
+.controller('CreateStudentController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
+	if($window.sessionStorage.logged_in_status === 'true' && JSON.parse($window.sessionStorage.logged_in).userType === 'supervisor') {
+		console.log("Accessing create_student as supervisor");
+	} else {
+		console.log("Accessing create_student as non-supervisor");
+		$location.path('/home');
+	}
+
+	$scope.create_student = function() {
+		console.log("CREATE STUDENT");
+		var username = $scope.username;
+		var FirstName = $scope.FirstName;
+		var LastName = $scope.LastName;
+		var password = $scope.password;
+
+		$http.post('/api/user/create', {'username': username, 'password': password, 'userType': 'student'})
+			.then(function(success) {
+				console.log("controllers.js - CreateUserController create_user: then");
+				$location.path('/home');
+			}, function(error) {
+				console.log(error);
+			});
+
+	}
+
 }])
 .controller('CreateUserController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
 	console.log("controller.js - CreateUserController");

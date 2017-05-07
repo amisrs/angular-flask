@@ -39,19 +39,19 @@ angular.module('angularDirectives', [])
 .directive('coursesByCategory', function() {
   return {
     restrict: 'E',
-    template: "<h2>{{ category }}</h2>{{ emptyMessage }}<category-carousel></category-carousel>"
+    template: "<h4 class=\"capitalize\">{{ category }}</h4>{{ emptyMessage }}<category-carousel></category-carousel>"
   }
 })
 .directive('categoryCarousel', function() {
   return {
     restrict: 'E',
-    template: "<carousel><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
+    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
   }
 })
 .directive('allCarousel', function() {
   return {
     restrict: 'E',
-    template: "<carousel><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
+    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
   }
 })
 .directive('userSnippet', function() {
@@ -65,4 +65,15 @@ angular.module('angularDirectives', [])
     restrict: 'E',
     template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>Ongoing Courses</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
   }
+})
+.directive('disableAnimation', function($animate){
+    return {
+        restrict: 'A',
+        link: function($scope, $element, $attrs){
+            $attrs.$observe('disableAnimation', function(value){
+                $animate.enabled(!value, $element);
+            });
+        }
+    }
 });
+;
