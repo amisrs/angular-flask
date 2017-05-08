@@ -25,15 +25,17 @@ class Course(db.Model):
     title = db.Column(db.String(80))
     description = db.Column(db.String(80))
     category = db.Column(db.String(80))
+    header_image = db.Column(db.String(255))
 
     def __call__(arg1, arg2, arg3):
         print "call course"
 
-    def __init__(self, CourseID, title, description, category):
+    def __init__(self, CourseID, title, description, category, header_image):
         self.CourseID = CourseID
         self.title = title
         self.description = description
         self.category = category
+        self.header_image = header_image
 
 
     def __repr__(self):
@@ -41,7 +43,8 @@ class Course(db.Model):
             'CourseID': self.CourseID,
             'title': self.title,
             'description': self.description,
-            'category': self.category
+            'category': self.category,
+            'header_image': self.header_image
         })
 
 
