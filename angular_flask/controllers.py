@@ -48,6 +48,7 @@ api_session = api_manager.session
 @app.route('/course/<course_id>')
 @app.route('/home')
 @app.route('/students')
+@app.route('/register')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -80,6 +81,8 @@ def rest_pages(model_name, item_id=None):
                     'angular_flask/templates/index.html').read())
     abort(404)
 
+
+
 @app.route('/api/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -110,15 +113,27 @@ def get_users():
 
 @app.route('/api/user/create', methods=['POST'])
 def create_user():
-    creator = session['logged_in']
-    if creator['userType'] == 'supervisor':
-        supervisor = Supervisor.query.filter(Supervisor.UserID == creator['UserID']).all()[0]
+    if 'logged_in' in session:
+        creator = session['logged_in']
+        if creator['userType'] == 'supervisor':
+            supervisor = Supervisor.query.filter(Supervisor.UserID == creator['UserID']).all()[0]
 
 
     json_data = request.get_json()
     print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
     print json_data
-    new_user = User(None, json_data['username'], json_data['password'], json_data['userType'], json_data['FirstName'], json_data['LastName'])
+    existing_user = User.query.filter_by(login=json_data['username']).first()
+    if existing_user:
+        return "User exists"
+
+    FirstName = ''
+    LastName = ''
+    if 'FirstName' in json_data:
+        FirstName = json_data['FirstName']
+    if 'LastName' in json_data:
+        LastName = json_data['LastName']
+
+    new_user = User(None, json_data['username'], json_data['password'], json_data['userType'], FirstName, LastName)
     try:
         db.session.add(new_user)
         db.session.commit()
@@ -136,6 +151,10 @@ def create_user():
         elif json_data['userType'] == 'admin':
             new_admin = Admin(None, inserted_user.UserID)
             db.session.add(new_admin)
+            db.session.commit()
+        elif json_data['userType'] == 'sponsor':
+            new_sponsor = Sponsor(None, inserted_user.UserID)
+            db.session.add(new_sponsor)
             db.session.commit()
     except Exception as e:
         print "probably duplicate login: " + str(e)

@@ -21,6 +21,8 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 			$location.path('/course');
 		} else if(userType === 'supervisor') {
 			$location.path('/students');
+		} else if(userType ==='sponsor') {
+			$location.path('/');
 		}
 	} else {
 		$location.path('/login');
@@ -42,8 +44,34 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		$scope.isShowingNew = false;
 	}
 }])
-.controller('LoginController', ['$scope', '$http', '$location', '$window', '$rootScope', function ($scope, $http, $location, $window, $rootScope) {
+.controller('RegisterController', ['$scope', '$http', '$location', '$window', '$rootScope', function($scope, $http, $location, $window, $rootScope) {
 
+	$scope.register = function() {
+		var username = $scope.username;
+		var email = $scope.email;
+		var password = $scope.password;
+
+		//http post
+		$http.post('/api/user/create', {'username': username, 'email': email, 'password': password, 'userType': 'sponsor'})
+			.then(function(success) {
+				$http.post('/api/login', {'username': username, 'password': password})
+				.then(function(success) {
+						$window.sessionStorage.setItem("logged_in", JSON.stringify(success.data.user));
+						$window.sessionStorage.setItem("logged_in_status", true)
+						$rootScope.$broadcast('login-change');
+						$location.path('/home')
+				}, function(error) {
+						console.log(error);
+				})
+			}, function(error) {
+				console.log(error);
+			});
+	}
+}])
+.controller('LoginController', ['$scope', '$http', '$location', '$window', '$rootScope', function ($scope, $http, $location, $window, $rootScope) {
+	if($window.sessionStorage.logged_in_status === 'true') {
+		$location.path('/home');
+	}
 	$scope.login = function() {
 		console.log("ANGULAR LOGIN");
 		var username = $scope.username;

@@ -151,6 +151,23 @@ class Admin(db.Model):
             'UserID': self.UserID,
         })
 
+class Sponsor(db.Model):
+    SponsorID = db.Column(db.Integer, primary_key=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('user.UserID'))
+
+    def __call__(arg1, arg2, arg3):
+        print "call sponsor"
+
+    def __init__(self, SponsorID, UserID):
+        self.SponsorID = SponsorID
+        self.UserID = UserID
+
+    def __repr__(self):
+        return json.dumps({
+            'SponsorID': self.SponsorID,
+            'UserID': self.UserID
+        })
+
 class Enrolment(db.Model):
     StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
     CourseID = db.Column(db.Integer, db.ForeignKey('course.CourseID'), primary_key=True)
@@ -181,6 +198,7 @@ app.config['API_MODELS'] = {
                                 'student': Student,
                                 'supervisor': Supervisor,
                                 'admin': Admin,
+                                'sponsor': Sponsor,
                                 'enrolment': Enrolment
                             }
 
@@ -193,5 +211,6 @@ app.config['CRUD_URL_MODELS'] = {
                                     'student': Student,
                                     'supervisor': Supervisor,
                                     'admin': Admin,
+                                    'sponsor': Sponsor,
                                     'enrolment': Enrolment
                                 }

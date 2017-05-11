@@ -2,22 +2,28 @@
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <h1> Login </h1>
+      <h1> Register </h1>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <form ng-submit="login()">
+      <form ng-submit="register()">
         <p>
           <input id="username" class="form-control" type="text" name="username" ng-model="username" placeholder="Username" required>
         </p>
         <p>
+          <input id="email" class="form-control" type="email" name="Email" ng-model="email" placeholder="Email" required>
+        </p>
+        <p>
           <input id="password" class="form-control" type="password" name="password" ng-model="password" placeholder="Password" required>
         </p>
-        <a href="/"> Forgot password? </a>
-        <input class="btn btn-primary pull-right" type="submit" value="Login">
+        <p>
+          <input id="password-confirm" class="form-control" type="password" name="password-confirm" placeholder="Confirm password" required>
+        </p>
+
+        <input class="btn btn-primary pull-right" type="submit" value="Register">
       </form>
     </div>
     <div class="col-md-4"> </div>
@@ -25,6 +31,6 @@
   <br />
   <div class="row big-page">
     <div class="col-md-12">
-      <a href="/register"> Register </a>
+      <a href="/login"> Login </a>
     </div>
 </div>

@@ -25,6 +25,10 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			templateUrl: '/static/partials/course-detail.html',
 			controller: 'CourseDetailController'
 		})
+		.when('/register', {
+			templateUrl: 'static/partials/register.html',
+			controller: 'RegisterController'
+		})
 		.when('/login', {
 			templateUrl: 'static/partials/login.html',
 			controller: 'LoginController'
