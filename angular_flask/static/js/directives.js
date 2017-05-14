@@ -52,13 +52,13 @@ angular.module('angularDirectives', [])
 .directive('categoryCarousel', function() {
   return {
     restrict: 'E',
-    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
+    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course/course_tile.html'\"></div></slide></carousel>"
   }
 })
 .directive('allCarousel', function() {
   return {
     restrict: 'E',
-    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course_tile.html'\"></div></slide></carousel>"
+    template: "<carousel disable-animation=\"true\"><slide ng-repeat=\"course in courses\"><div ng-include src=\"'static/partials/course/course_tile.html'\"></div></slide></carousel>"
   }
 })
 .directive('userSnippet', function() {

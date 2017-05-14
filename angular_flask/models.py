@@ -168,6 +168,39 @@ class Sponsor(db.Model):
             'UserID': self.UserID
         })
 
+class Project(db.Model):
+    ProjectID = db.Column(db.Integer, primary_key=True)
+    SponsorID = db.Column(db.Integer, db.ForeignKey('sponsor.SponsorID'))
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
+    title = db.Column(db.String(80))
+    description = db.Column(db.String(80))
+    category = db.Column(db.String(80))
+    status = db.Column(db.String(80))
+
+    def __call__(arg1, arg2, arg3):
+        print "call project"
+
+    def __init__(self, ProjectID, SponsorID, StudentID, title, description, category, status):
+        self.ProjectID = ProjectID
+        self.SponsorID = SponsorID
+        self.StudentID = StudentID
+        self.title = title
+        self.description = description
+        self.category = category
+        self.status = status
+
+    def __repr__(self):
+        return json.dumps({
+            'ProjectID': self.ProjectID,
+            'SponsorID': self.SponsorID,
+            'StudentID': self.StudentID,
+            'title': self.title,
+            'description': self.description,
+            'category': self.category,
+            'status': self.status
+        })
+
+
 class Enrolment(db.Model):
     StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
     CourseID = db.Column(db.Integer, db.ForeignKey('course.CourseID'), primary_key=True)
@@ -190,6 +223,28 @@ class Enrolment(db.Model):
             'status': self.status
         })
 
+class Application(db.Model):
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
+    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), primary_key=True)
+    status = db.Column(db.String(80))
+
+    def __call__(arg1, arg2, arg3):
+        print "call application"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, StudentID, ProjectID, status):
+        self.StudentID = StudentID
+        self.ProjectID = ProjectID
+        self.status = status
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'StudentID': self.StudentID,
+            'ProjectID': self.ProjectID,
+            'status': self.status
+        })
+
 # models for which we want to create API endpoints
 app.config['API_MODELS'] = {
                                 'course': Course,
@@ -199,7 +254,9 @@ app.config['API_MODELS'] = {
                                 'supervisor': Supervisor,
                                 'admin': Admin,
                                 'sponsor': Sponsor,
-                                'enrolment': Enrolment
+                                'project': Project,
+                                'enrolment': Enrolment,
+                                'application': Application
                             }
 
 # models for which we want to create CRUD-style URL endpoints,
@@ -212,5 +269,7 @@ app.config['CRUD_URL_MODELS'] = {
                                     'supervisor': Supervisor,
                                     'admin': Admin,
                                     'sponsor': Sponsor,
-                                    'enrolment': Enrolment
+                                    'project': Project,
+                                    'enrolment': Enrolment,
+                                    'application': Application
                                 }

@@ -22,7 +22,7 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			controller: 'StudentHomeController'
 		})
 		.when('/course/:CourseID', {
-			templateUrl: '/static/partials/course-detail.html',
+			templateUrl: '/static/partials/course/course-detail.html',
 			controller: 'CourseDetailController'
 		})
 		.when('/register', {
@@ -37,6 +37,14 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			templateUrl: 'static/partials/supervisor_home.html',
 			controller: 'SupervisorHomeController'
 		})
+		.when('/project', {
+			templateUrl: 'static/partials/sponsor_home.html',
+			controller: 'SponsorHomeController'
+		})
+		.when('/project/:ProjectID', {
+			templateUrl: 'static/partials/project/project_detail.html',
+			controller: 'ProjectDetailController'
+		})
 		.when('/logout', {
 			templateUrl: 'static/partials/landing.html',
 			controller: 'LogoutController'
@@ -49,7 +57,7 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			controller: 'CreateUserController'
 		})
 		.when('/admin/create_course', {
-			templateUrl: '/static/partials/create_course.html',
+			templateUrl: '/static/partials/course/create_course.html',
 			controller: 'CreateCourseController'
 		})
 		.when('/home', {

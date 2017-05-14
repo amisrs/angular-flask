@@ -22,10 +22,38 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		} else if(userType === 'supervisor') {
 			$location.path('/students');
 		} else if(userType ==='sponsor') {
-			$location.path('/');
+			$location.path('/project');
 		}
 	} else {
 		$location.path('/login');
+	}
+}])
+.controller('SponsorHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
+	console.log("controllers.js - SponsorHomeController: phoning home...");
+	$scope.isShowingNew = false;
+
+	$scope.showNew = function() {
+		console.log("SHOW NEW");
+		$scope.isShowingNew = true;
+	}
+	$scope.hideNew = function() {
+		console.log("HIDE NEW");
+		$scope.isShowingNew = false;
+	}
+}])
+.controller('CreateProjectController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
+	$scope.create_project = function() {
+		var title = $scope.title;
+		var description = $scope.description;
+		var category = $scope.category;
+
+		//http post
+		$http.post('/api/project/create', {'title': title, 'description': description, 'category': category})
+			.then(function(success) {
+				$location.path("/home");
+			}, function(error) {
+				console.log(error);
+			});
 	}
 }])
 .controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
@@ -157,6 +185,63 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		console.log(error);
 		console.log("controllers.js - UserListController: failed to get User list");
 	});
+}])
+.controller('ProjectListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
+	$http.get('/api/project')
+	.then(function(success) {
+		$scope.projects = success.data;
+	}, function(error) {
+		console.log(error);
+	});
+}])
+.controller('ProjectDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
+	$scope.showApplication = false;
+	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
+	if(userType === 'student') {
+		console.log("show appl");
+		$scope.showApplication = true;
+	} else {
+		$scope.showApplication = false;
+	}
+
+	var project_endpoint = '';
+	project_endpoint = '/api/project/' + $routeParams.ProjectID;
+
+	$http.get(project_endpoint)
+		.then(function(success) {
+			$scope.project = success.data;
+		}, function(error) {
+			console.log(status);
+		});
+		
+	if($scope.showApplication) {
+		$http.get(project_endpoint+'/apply')
+			.then(function(success) {
+				console.log(success);
+				$scope.status = success.data;
+			}, function(error) {
+				console.log(status);
+			});
+	}
+
+	$scope.apply = function() {
+		$http.post(course_endpoint+'/apply', {'UserID': $window.sessionStorage.logged_in.UserID })
+			.then(function(success) {
+				$route.reload();
+			}, function(error) {
+				console.log(error);
+			});
+	}
+
+	$scope.cancel = function() {
+		$http.post(course_endpoint+'/cancel', {'UserID': $window.sessionStorage.logged_in.UserID })
+			.then(function(success) {
+				$location.path('/home');
+			}, function(error) {
+				console.log(error);
+			});
+	}
+
 }])
 .controller('StudentListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
 	var endpoint = '/api/supervisor/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/student'

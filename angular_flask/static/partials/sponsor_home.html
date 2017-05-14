@@ -2,13 +2,18 @@
   <div ng-if="!isShowingNew">
     <div class="row">
       <div class="col-md-10">
-        <h2> My Students </h2>
+        <h2> My Projects </h2>
       </div>
       <div class="col-md-2">
         <button ng-click="showNew()" type="button" class="btn btn-primary header-button pull-right">New</button>
       </div>
     </div>
-    <student-table ng-controller="StudentListController"></student-table>
+    <div ng-controller="ProjectListController" class="row">
+      <div class="col-md-4" ng-repeat="project in projects | orderBy: 'id':true ">
+        <div ng-include src="'static/partials/project/project_tile.html'"></div>
+      </div>
+    </div>
+
   </div>
 
   <div ng-if="isShowingNew">
@@ -17,29 +22,26 @@
         <button ng-click="hideNew()" type="button" class="btn btn-link header-button pull-right">Back</button>
       </div>
       <div class="col-md-6">
-        <h2> New Student </h2>
+        <h2> New Project </h2>
       </div>
     </div>
-    <div ng-controller="CreateStudentController" class="row">
+    <div ng-controller="CreateProjectController" class="row">
       <div class="col-md-3"></div>
       <div class="col-md-6">
-        <form ng-submit="create_student()">
+        <form ng-submit="create_project()">
           <div class="row">
             <p class="col-md-12">
-              <input id="username" class="form-control" type="text" name="username" ng-model="username" placeholder="Username" required>
-            </p>
-          </div>
-          <div class="row">
-            <p class="col-md-6">
-              <input id="FirstName" class="form-control" type="text" name="FirstName" ng-model="FirstName" placeholder="First Name" required>
-            </p>
-            <p class="col-md-6">
-              <input id="LastName" class="form-control" type="text" name="LastName" ng-model="LastName" placeholder="Last Name" required>
+              <input id="title" class="form-control" type="text" name="title" ng-model="title" placeholder="Title" required>
             </p>
           </div>
           <div class="row">
             <p class="col-md-12">
-              <input id="password" class="form-control" type="password" name="password" ng-model="password" placeholder="Password" required>
+              <textarea id="description" class="form-control vertical-textarea" type="text" name="description" ng-model="description" placeholder="Description" required></textarea>
+            </p>
+          </div>
+          <div class="row">
+            <p class="col-md-12">
+              <input id="category" class="form-control" type="text" name="category" ng-model="category" placeholder="Category" required>
             </p>
           </div>
           <input class="btn btn-primary pull-right" type="submit" value="Create">

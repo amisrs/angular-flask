@@ -49,6 +49,8 @@ api_session = api_manager.session
 @app.route('/home')
 @app.route('/students')
 @app.route('/register')
+@app.route('/project')
+@app.route('/project/<project_id>')
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -260,6 +262,74 @@ def unenrol(courseid):
         db.session.commit()
     return "OK"
 
+@app.route('/api/project/', methods=['GET'])
+def get_projects():
+    projects = Project.query.all()
+    return str(projects)
+
+@app.route('/api/project/category', methods=['GET'])
+def get_project_categories():
+    resp = {}
+    categories = []
+    query = db.session.query(Project.category.distinct().label("category"))
+    for row in query.all():
+        categories.append(row.category.encode('utf-8'))
+    resp['cat_list'] = categories
+    print str(categories)
+    return jsonify(resp)
+
+@app.route('/api/project/create', methods=['POST'])
+def create_project():
+    json_data = request.get_json()
+    print "controllers.py - /api/project/create POST : JSON DATA ====\n\n"
+    print json_data
+    if 'logged_in' in session:
+        creator = session['logged_in']
+        if creator['userType'] == 'sponsor':
+            sponsor = Sponsor.query.filter(Sponsor.UserID == creator['UserID']).all()[0]
+        else:
+            return "Incorrect user type."
+    else:
+        return "Not logged in."
+    new_project = Project(None, sponsor.SponsorID, None, json_data['title'], json_data['description'], json_data['category'], 'open')
+    db.session.add(new_project)
+    db.session.commit()
+    return "OK"
+
+#enrol with currently logged in user
+@app.route('/api/project/<project_id>/apply', methods=['POST', 'GET'])
+def apply(project_id):
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    if request.method == 'POST':
+        print session['logged_in']
+        new_application = Application(student.StudentID, int(courseid), 'enrolled')
+        db.session.add(new_application)
+        db.session.commit()
+        return "OK"
+    else:
+        application = Application.query\
+            .filter(Application.StudentID == student.StudentID)\
+            .filter(Application.ProjectID == project_id).all()
+        return application
+
+@app.route('/api/project/<project_id>/cancel', methods=['POST', 'GET'])
+def cancel(project_id):
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    if request.method == 'POST':
+        new_application = Application.query\
+            .filter(Application.StudentID == student.StudentID)\
+            .filter(Application.ProjectID == int(project_id)).first()
+        db.session.delete(new_application)
+        db.session.commit()
+    return "OK"
+
+@app.route('/api/sponsor/<user_id>/project', methods=['GET'])
+def get_sponsor_projects(user_id):
+    projects = []
+    sponsor = Sponsor.query.filter(Sponsor.UserID == user_id).all()[0]
+    projects = Project.query.filter(Project.SponsorID == sponsor.SponsorID).all()
+    print str(projects)
+    return str(projects)
 
 @app.route('/_session')
 def get_from_session():

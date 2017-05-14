@@ -1,0 +1,25 @@
+<a class="btn btn-link" href="/project/">back</a>
+<!-- <p><a href="/course/">back</a></p> -->
+<div class="container">
+
+	<div class="row">
+		<div class="col-md-10">
+			<h2>{{ project.title }}</h2>
+		</div>
+		<div class="col-md-2 pull-right" >
+      <form ng-submit="apply()">
+        <input class="btn btn-success header-button" type="submit" value="Apply">
+      </form>
+		</div>
+		<div class="col-md-2 pull-right">
+      <form ng-submit="cancel()">
+        <input class="btn btn-danger header-button" type="submit" value="Cancel">
+      </form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h4>{{ project.description }}</h4>
+		</div>
+	</div>
+</div>
