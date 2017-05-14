@@ -195,37 +195,58 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 	});
 }])
 .controller('ProjectDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
+	var project_endpoint = '';
+	project_endpoint = '/api/project/' + $routeParams.ProjectID;
+
 	$scope.showApplication = false;
 	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
+	$scope.userType = userType;
 	if(userType === 'student') {
 		console.log("show appl");
 		$scope.showApplication = true;
+	} else if(userType === 'sponsor') {
+		$scope.showApplication = false;
+		$http.get(project_endpoint+'/apply')
+			.then(function(success) {
+				console.log("Got applicants data.");
+				$scope.applicants = success.data;
+				console.log(success);
+			}, function(error) {
+				console.log(error);
+			});
 	} else {
 		$scope.showApplication = false;
 	}
 
-	var project_endpoint = '';
-	project_endpoint = '/api/project/' + $routeParams.ProjectID;
 
 	$http.get(project_endpoint)
 		.then(function(success) {
+			console.log("Got project data.");
 			$scope.project = success.data;
 		}, function(error) {
 			console.log(status);
 		});
-		
+
 	if($scope.showApplication) {
+		console.log("Getting application status...");
 		$http.get(project_endpoint+'/apply')
 			.then(function(success) {
 				console.log(success);
-				$scope.status = success.data;
+				$scope.data = success.data;
+				console.log($scope.data);
+				if($scope.data.length !== 0) {
+					$scope.hasApplied = true;
+				} else {
+					$scope.hasApplied = false;
+				}
+
 			}, function(error) {
 				console.log(status);
 			});
 	}
 
 	$scope.apply = function() {
-		$http.post(course_endpoint+'/apply', {'UserID': $window.sessionStorage.logged_in.UserID })
+		$http.post(project_endpoint+'/apply', {'UserID': $window.sessionStorage.logged_in.UserID })
 			.then(function(success) {
 				$route.reload();
 			}, function(error) {
@@ -234,9 +255,9 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 	}
 
 	$scope.cancel = function() {
-		$http.post(course_endpoint+'/cancel', {'UserID': $window.sessionStorage.logged_in.UserID })
+		$http.post(project_endpoint+'/cancel', {'UserID': $window.sessionStorage.logged_in.UserID })
 			.then(function(success) {
-				$location.path('/home');
+				$route.reload();
 			}, function(error) {
 				console.log(error);
 			});

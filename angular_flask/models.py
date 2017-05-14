@@ -226,23 +226,23 @@ class Enrolment(db.Model):
 class Application(db.Model):
     StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
     ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'), primary_key=True)
-    status = db.Column(db.String(80))
+    application_status = db.Column(db.String(80))
 
     def __call__(arg1, arg2, arg3):
         print "call application"
         #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
 
-    def __init__(self, StudentID, ProjectID, status):
+    def __init__(self, StudentID, ProjectID, application_status):
         self.StudentID = StudentID
         self.ProjectID = ProjectID
-        self.status = status
+        self.application_status = application_status
 
     def __repr__(self):
         #return '<user %r>' % (self.login + '-' + str(self.UserID))
         return json.dumps({
             'StudentID': self.StudentID,
             'ProjectID': self.ProjectID,
-            'status': self.status
+            'application_status': self.application_status
         })
 
 # models for which we want to create API endpoints

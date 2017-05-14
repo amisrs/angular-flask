@@ -265,6 +265,7 @@ def unenrol(courseid):
 @app.route('/api/project/', methods=['GET'])
 def get_projects():
     projects = Project.query.all()
+    print str(projects)
     return str(projects)
 
 @app.route('/api/project/category', methods=['GET'])
@@ -296,21 +297,59 @@ def create_project():
     db.session.commit()
     return "OK"
 
+@app.route('/api/project/<project_id>', methods=['GET'])
+def get_project(project_id):
+    project = Project.query.filter(Project.ProjectID == project_id).all()[0]
+    print str(project)
+    return str(project)
+
 #enrol with currently logged in user
 @app.route('/api/project/<project_id>/apply', methods=['POST', 'GET'])
 def apply(project_id):
-    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    if 'logged_in' in session:
+        userType = session['logged_in']['userType']
+    else:
+        return "Not logged in."
+
+    if userType == 'student':
+        student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    elif userType == 'sponsor':
+        sponsor = Sponsor.query.filter(Sponsor.UserID == session['logged_in']['UserID']).all()[0]
+
     if request.method == 'POST':
+        if userType != 'student':
+            return "Incorrect user type."
         print session['logged_in']
-        new_application = Application(student.StudentID, int(courseid), 'enrolled')
-        db.session.add(new_application)
+        new_application = Application(student.StudentID, int(project_id), 'applied')
+        db.session.merge(new_application)
         db.session.commit()
         return "OK"
     else:
-        application = Application.query\
-            .filter(Application.StudentID == student.StudentID)\
-            .filter(Application.ProjectID == project_id).all()
-        return application
+        if userType == 'student':
+            print "student apply get"
+            application = Application.query\
+                .filter(Application.StudentID == student.StudentID)\
+                .filter(Application.ProjectID == project_id).all()
+            print str(application)
+            return str(application)
+
+        elif userType == 'sponsor':
+            print "sponsor apply get"
+            application = db.session.query(Application, Project, Sponsor).join(Project).join(Sponsor)\
+                .filter(Sponsor.SponsorID == sponsor.SponsorID).all()
+            print application
+            counter = 0
+            for (application, project, sponsor) in application:
+                joined_item = {}
+                joined_item[str(counter)] = {}
+                joined_item[str(counter)]['ProjectID'] = int(project.ProjectID)
+                joined_item[str(counter)]['StudentID'] = application.StudentID
+                joined_item[str(counter)]['SponsorID'] = sponsor.SponsorID
+                counter += 1
+                print "JOINED ITEM: " + json.dumps(joined_item)
+
+            print str(joined_item)
+            return json.dumps(joined_item), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 @app.route('/api/project/<project_id>/cancel', methods=['POST', 'GET'])
 def cancel(project_id):
@@ -319,7 +358,7 @@ def cancel(project_id):
         new_application = Application.query\
             .filter(Application.StudentID == student.StudentID)\
             .filter(Application.ProjectID == int(project_id)).first()
-        db.session.delete(new_application)
+        new_application.application_status = 'cancelled'
         db.session.commit()
     return "OK"
 
