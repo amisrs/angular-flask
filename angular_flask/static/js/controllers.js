@@ -197,6 +197,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 .controller('ProjectDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
 	var project_endpoint = '';
 	project_endpoint = '/api/project/' + $routeParams.ProjectID;
+	$scope.applicants = [];
 
 	$scope.showApplication = false;
 	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
@@ -209,7 +210,33 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		$http.get(project_endpoint+'/apply')
 			.then(function(success) {
 				console.log("Got applicants data.");
-				$scope.applicants = success.data;
+				// console.log(success.data);
+				$scope.applications = success.data;
+				console.log("len:"+$scope.applications.length);
+				for(var i=0; i<$scope.applications.length; i++) {
+					//http get the student by id
+					console.log("i " + i);
+					console.log("app[i] " + $scope.applications[i].StudentID);
+					var ep = '/api/students/'+$scope.applications[i].StudentID;
+					console.log("ep = " + ep);
+
+					var studentId = $scope.applications[i].StudentID;
+
+					$http.get('/api/students/'+studentId)
+						.then(function(success2) {
+							// console.log
+							console.log(success2.data);
+							$http.get(project_endpoint+'/application/'+studentId)
+								.then(function(success3) {
+									success2.data.status = success3.data;
+									$scope.applicants.push(success2.data);
+								})
+
+							// console.log($scope.applicants);
+						}, function(error) {
+							console.log(error);
+						});
+				}
 				console.log(success);
 			}, function(error) {
 				console.log(error);

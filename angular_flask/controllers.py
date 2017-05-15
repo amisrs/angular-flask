@@ -68,20 +68,20 @@ from sqlalchemy.sql import exists
 crud_url_models = app.config['CRUD_URL_MODELS']
 
 
-@app.route('/<model_name>/')
-@app.route('/<model_name>/<item_id>')
-def rest_pages(model_name, item_id=None):
-    if session.get('logged_in') is True:
-        if model_name in crud_url_models:
-            model_class = crud_url_models[model_name]
-            print "querying " + model_name
-            print model_class
-            print model_class.__dict__
-            if item_id is None or api_session.query(exists().where(
-                    model_class.CourseID == item_id)).scalar():
-                return make_response(open(
-                    'angular_flask/templates/index.html').read())
-    abort(404)
+# @app.route('/<model_name>/')
+# @app.route('/<model_name>/<item_id>')
+# def rest_pages(model_name, item_id=None):
+#     if session.get('logged_in') is True:
+#         if model_name in crud_url_models:
+#             model_class = crud_url_models[model_name]
+#             print "querying " + model_name
+#             print model_class
+#             print model_class.__dict__
+#             if item_id is None or api_session.query(exists().where(
+#                     model_class.CourseID == item_id)).scalar():
+#                 return make_response(open(
+#                     'angular_flask/templates/index.html').read())
+#     abort(404)
 
 
 
@@ -193,6 +193,28 @@ def get_not_enrolled_courses(user_id):
     print "THESE ARE THE COURSES YOURE NOT ENROLLED IN"
     print str(all_courses)
     return str(all_courses)
+
+@app.route('/api/students/<student_id>', methods=['GET'])
+def get_student_by_id(student_id):
+    print "trigger api student"
+    # print "api student: " + str(student)
+
+    student_join = db.session.query(User, Student).join(Student)\
+        .filter(Student.StudentID == student_id).all()
+    print student_join
+    for (user, student) in student_join:
+        joined_item = {}
+        joined_item['StudentID'] = student.StudentID
+        joined_item['FirstName'] = user.FirstName
+        joined_item['LastName'] = user.LastName
+        joined_item['UserID'] = user.UserID
+        joined_item['login'] = user.login
+    # print "JOINED ITEM: " + json.dumps(student_join)
+
+    print str(joined_item)
+    return json.dumps(joined_item), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+    #return jsonify(student)
 
 #return a list of students for this supervisor
 @app.route('/api/supervisor/<user_id>/student', methods=['GET'])
@@ -336,20 +358,22 @@ def apply(project_id):
         elif userType == 'sponsor':
             print "sponsor apply get"
             application = db.session.query(Application, Project, Sponsor).join(Project).join(Sponsor)\
-                .filter(Sponsor.SponsorID == sponsor.SponsorID).all()
+                .filter(Sponsor.SponsorID == sponsor.SponsorID)\
+                .filter(Project.ProjectID == project_id).all()
             print application
             counter = 0
+            joined_items = []
             for (application, project, sponsor) in application:
                 joined_item = {}
-                joined_item[str(counter)] = {}
-                joined_item[str(counter)]['ProjectID'] = int(project.ProjectID)
-                joined_item[str(counter)]['StudentID'] = application.StudentID
-                joined_item[str(counter)]['SponsorID'] = sponsor.SponsorID
+                joined_item['ProjectID'] = int(project.ProjectID)
+                joined_item['StudentID'] = application.StudentID
+                joined_item['SponsorID'] = sponsor.SponsorID
+                joined_items.append(joined_item)
                 counter += 1
                 print "JOINED ITEM: " + json.dumps(joined_item)
 
-            print str(joined_item)
-            return json.dumps(joined_item), 200, {'Content-Type': 'application/json; charset=utf-8'}
+            print str(joined_items)
+            return json.dumps(joined_items), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
 @app.route('/api/project/<project_id>/cancel', methods=['POST', 'GET'])
 def cancel(project_id):
@@ -361,6 +385,16 @@ def cancel(project_id):
         new_application.application_status = 'cancelled'
         db.session.commit()
     return "OK"
+
+@app.route('/api/project/<project_id>/application/<student_id>', methods=['GET'])
+def get_application_status(project_id, student_id):
+    application = Application.query\
+        .filter(Application.StudentID == int(student_id))\
+        .filter(Application.ProjectID == int(project_id)).first()
+    if application == None:
+        return "No result"
+    else:
+        return application.application_status
 
 @app.route('/api/sponsor/<user_id>/project', methods=['GET'])
 def get_sponsor_projects(user_id):
