@@ -386,15 +386,31 @@ def cancel(project_id):
         db.session.commit()
     return "OK"
 
-@app.route('/api/project/<project_id>/application/<student_id>', methods=['GET'])
+@app.route('/api/project/<project_id>/application/<student_id>', methods=['GET', 'POST'])
 def get_application_status(project_id, student_id):
-    application = Application.query\
-        .filter(Application.StudentID == int(student_id))\
-        .filter(Application.ProjectID == int(project_id)).first()
-    if application == None:
-        return "No result"
+    if request.method == 'GET':
+        application = Application.query\
+            .filter(Application.StudentID == int(student_id))\
+            .filter(Application.ProjectID == int(project_id)).first()
+        if application == None:
+            return "No result"
+        else:
+            return application.application_status
     else:
-        return application.application_status
+        json_data = request.get_json()
+        application = Application.query\
+            .filter(Application.StudentID == int(student_id))\
+            .filter(Application.ProjectID == int(project_id)).first()
+        application.application_status = 'accepted'
+
+        other_applications = Application.query\
+            .filter(Application.ProjectID == int(project_id))\
+            .filter(Application.StudentID != int(student_id)).all()
+
+        for other_application in other_applications:
+            other_application.application_status = 'unsuccessful'
+        db.session.commit()
+        return "OK"
 
 @app.route('/api/sponsor/<user_id>/project', methods=['GET'])
 def get_sponsor_projects(user_id):

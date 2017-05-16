@@ -290,6 +290,17 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 			});
 	}
 
+	$scope.accept = function(studentId) {
+		console.log("triggerd accept: " + studentId);
+		$http.post(project_endpoint+'/application/'+studentId)
+			.then(function(success) {
+				console.log("post accept success");
+				$route.reload();
+			}, function(error) {
+				console.log(error);
+			});
+	}
+
 }])
 .controller('StudentListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
 	var endpoint = '/api/supervisor/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/student'
