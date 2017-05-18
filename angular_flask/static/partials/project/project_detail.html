@@ -1,66 +1,111 @@
-<a class="btn btn-link" href="/project/">back</a>
 <!-- <p><a href="/course/">back</a></p> -->
-<div class="container">
+<div class="split-pane">
+  <div class="col-md-6 detail-pane">
 
-	<div class="row">
-		<div class="col-md-10">
-			<h2>{{ project.title }}</h2>
-		</div>
-		<div class="col-md-2 pull-right" ng-if="(showApplication && !hasApplied) || data[0].application_status === 'cancelled'">
-      <form ng-submit="apply()">
-        <input class="btn btn-success header-button" type="submit" value="Apply">
-      </form>
-		</div>
-		<div class="col-md-2 pull-right" ng-if="showApplication && hasApplied && data[0].application_status === 'applied'">
-      <form ng-submit="cancel()">
-        <input class="btn btn-danger header-button" type="submit" value="Cancel">
-      </form>
-		</div>
-    <div class="col-md-2 pull-right" ng-if="showApplication && hasApplied && data[0].application_status === 'accepted'">
-      <form>
-        <input class="btn btn-link header-button" type="submit" value="Accepted" disabled="true">
-      </form>
+  	<div class="row">
+      <div class="col-md-2">
+        <a class="btn btn-link header-button" href="/project/">back</a>
+      </div>
+  		<div class="col-md-6">
+
+  			<h2>{{ project.title }}</h2>
+  		</div>
+      <div class="col-md-2">
+
+        <h2>${{ project.payment }}</h2>
+      </div>
+  		<div class="col-md-2 pull-right" ng-if="(showApplication && !hasApplied) || data[0].application_status === 'cancelled'">
+        <form ng-submit="apply()">
+          <input class="btn btn-success header-button" type="submit" value="Apply">
+        </form>
+  		</div>
+  		<div class="col-md-2 pull-right" ng-if="showApplication && hasApplied && data[0].application_status === 'applied'">
+        <form ng-submit="cancel()">
+          <input class="btn btn-danger header-button" type="submit" value="Cancel">
+        </form>
+  		</div>
+      <div class="col-md-2 pull-right" ng-if="showApplication && hasApplied && data[0].application_status === 'accepted'">
+        <form>
+          <input class="btn btn-link header-button" type="submit" value="Accepted" disabled="true">
+        </form>
+      </div>
+  	</div>
+    <hr />
+
+    <div class="row">
+      <div class="col-md-2">
+      </div>
+
+  		<div class="col-md-8">
+  			<h4>Description</h4>
+        <textarea class="big-textarea form-control" readonly="true">{{ project.description }}</textarea>
+  		</div>
+  	</div>
+    <div class="row">
+      <div class="col-md-2">
+      </div>
+
+  		<div class="col-md-8">
+  			<h4>Deliverables</h4>
+        <textarea class="big-textarea form-control" readonly="true">{{ project.deliverables }}</textarea>
+  		</div>
+  	</div>
+    <div class="row">
+      <div class="col-md-2">
+      </div>
+
+      <div class="col-md-8">
+        <h4>Prerequisites</h4>
+        <textarea class="big-textarea form-control" readonly="true">{{ project.requirements }}</textarea>
+      </div>
     </div>
-	</div>
-	<div class="row">
-		<div class="col-md-12">
-			<h4>{{ project.description }}</h4>
-		</div>
-	</div>
-</div>
+  </div>
 
-<div class="container" ng-if="userType === 'sponsor'">
-  <div class="col-md-10">
-    <h2>Applicants</h2>
-    {{ applicants }}
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="applicant in applicants">
-          <td>{{ applicant.login }}</td>
-          <td>{{ applicant.FirstName }}</td>
-          <td>{{ applicant.LastName }}</td>
-          <td>
-            <form ng-submit="accept(applicant.StudentID)" ng-if="applicant.status === 'applied'">
-              <input  class="btn btn-success" type="submit" value="Accept">
-            </form>
-            <form ng-submit="accept(applicant.StudentID)" ng-if="applicant.status === 'cancelled'">
-              <input  class="btn" type="submit" value="Cancelled" disabled="true">
-            </form>
-            <form ng-if="applicant.status === 'accepted'">
-              <input  class="btn btn-lnik" type="submit" value="Accepted" disabled="true">
-            </form>
+  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && !projectOngoing">
+    <div class="row">
+      <h2>Applicants</h2>
+    </div>
+      <table class="table">
+        <!-- <thead>
+          <tr>
+            <th>Username</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Status</th>
+            <th>Profile</th>
+          </tr>
+        </thead> -->
+        <tbody>
+          <tr ng-repeat="applicant in applicants">
+            <!-- <td>{{ applicant.login }}</td> -->
+            <td>{{ applicant.FirstName }} {{ applicant.LastName }}</td>
+            <td>
+              <a class="btn" href="/student/{{applicant.StudentID}}">View</a>
+            </td>
 
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td>
+              <form ng-submit="accept(applicant.StudentID)" ng-if="applicant.status === 'applied'">
+                <input  class="btn btn-success pull-right" type="submit" value="Accept">
+              </form>
+              <form ng-submit="accept(applicant.StudentID)" ng-if="applicant.status === 'cancelled'">
+                <input  class="btn pull-right" type="submit" value="Cancelled" disabled="true">
+              </form>
+              <form ng-if="applicant.status === 'accepted'">
+                <input  class="btn btn-link pull-right" type="submit" value="Accepted" disabled="true">
+              </form>
+              <form ng-if="applicant.status === 'unsuccessful'">
+                <input  class="btn btn-link pull-right" type="submit" value="Unsuccessful" disabled="true">
+              </form>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && projectOngoing">
+    <div class="row">
+      <h2>Work Details</h2>
+      <hr />
+    </div>
   </div>
 </div>

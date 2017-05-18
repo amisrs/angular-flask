@@ -1,5 +1,55 @@
+<div class="top-pane">
+  <div class="container">
+    <h1> Hello, {{ student.FirstName }}. </h1>
+  </div>
+</div>
 <div class="container">
+  <div class="col-md-12">
+    <ul class="nav nav-pills nav-justified top-pills">
+      <li ng-class="{active: currentTab == 1}"><a href="#" ng-click="switch(1)">My Courses</a></li>
+      <li ng-class="{active: currentTab == 2}"><a href="#" ng-click="switch(2)">Available Courses</a></li>
+      <li ng-class="{active: currentTab == 3}"><a href="#" ng-click="switch(3)">My Projects</a></li>
+      <li ng-class="{active: currentTab == 4}"><a href="#" ng-click="switch(4)">Available Projects</a></li>
+    </ul>
+  </div>
+</div>
+
+
+<div class="container" ng-if="currentTab === 1">
   <div ng-controller="EnrolledCourseListController" ng-include src="'static/partials/course/enrolled_course_list.html'"></div>
-  <hr>
+</div>
+<div class="container" ng-if="currentTab === 2">
   <div ng-controller="CourseListController" ng-include src="'static/partials/course/course_big_list.html'"></div>
+</div>
+<div class="container" ng-if="currentTab === 3">
+  <div ng-controller="ProjectListStudentController">
+    <div class="container-fluid">
+    	<div class="row">
+    		<div class="col-md-4" ng-repeat="project in accepted_projects | orderBy: 'id':true ">
+    			<div ng-include src="'static/partials/project/project_tile.html'"></div>
+    		</div>
+    	</div>
+    	<div ng-if="accepted_projects.length === 0">
+    		<div class="col-md-12 big-page empty-message">
+    			<p> You're not engaged in any projects! </p>
+    		</div>
+    	</div>
+    </div>
+  </div>
+</div>
+<div class="container" ng-if="currentTab === 4">
+  <div ng-controller="ProjectListStudentController">
+    <div class="container-fluid">
+    	<div class="row">
+    		<div class="col-md-4" ng-repeat="project in other_projects | orderBy: 'id':true ">
+    			<div ng-include src="'static/partials/project/project_tile.html'"></div>
+    		</div>
+    	</div>
+    	<div ng-if="other_projects.length === 0">
+    		<div class="col-md-12 big-page empty-message">
+    			<p> There are no projects left! </p>
+    		</div>
+    	</div>
+    </div>
+  </div>
 </div>

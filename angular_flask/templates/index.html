@@ -1,6 +1,6 @@
 <!doctype html>
 <base href="/">
-<html lang="en" ng-app="AngularFlask">
+<html class="bignity" lang="en" ng-app="AngularFlask">
 <head>
 	<meta charset="utf-8">
 	<title>Git Gud</title>
@@ -21,6 +21,7 @@
 	<script src="/static/js/app.js"></script>
 	<script src="/static/js/controllers.js"></script>
 	<script src="/static/js/controllers-course.js"></script>
+	<script src="/static/js/controllers-project.js"></script>
  	<script src="/static/js/services.js"></script>
 	<script src="/static/js/directives.js"></script>
 
@@ -37,21 +38,33 @@
  	</script>
 
 </head>
-<body class="ng-cloak">
+<body class="ng-cloak bignity">
 	<nav ng-if="location!=='/'" class="navbar navbar-default no-margin">
 		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="/home">Git Gud</a>
+			<div class="row">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/home">Git Gud</a>
+				</div>
+				<div ng-if="logged_in_status === 'false'" class="navbar-header pull-right"><a class="navbar-brand" href="/login">Login</a></div>
+
+				<div ng-if="logged_in_status !== 'false'" class="dropdown pull-right">
+				  <button class="dropbtn">Login</button>
+				  <div class="dropdown-content">
+				    <a href="/home">Home</a>
+				    <a href="#">Link 2</a>
+				    <a href="/logout">Logout</a>
+				  </div>
+				</div>
 			</div>
-			<div class="navbar-header pull-right" ng-controller='login-controller'><custom-ng-login class="navbar-brand"></custom-ng-login></div>
 		</div>
+		<!-- <div class="navbar-header pull-right" ng-controller='login-controller'><custom-ng-login class="navbar-brand"></custom-ng-login></div> -->
 	</nav>
 	<div class="container page bignity">
 
 		<div id="content" class="container main bignity" ng-view>
 		</div>
 
-		<hr>
+		<!-- <hr>
 		<div class="container">
 			<footer id="footer" class="footer bigfoot">
 				<div class="footer-left">
@@ -62,6 +75,6 @@
 			</footer>
 			<br />
 		</div>
-	</div>
+	</div> -->
 </body>
 </html>

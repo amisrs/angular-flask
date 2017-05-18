@@ -20,7 +20,7 @@ angular.module('angularDirectives', [])
     if($scope.logged_in_status === 'true') {
       $scope.href = '/logout';
       // $scope.login_text = 'Hello ' + JSON.parse($scope.logged_in).login;
-      $scope.login_text = 'Logout';
+      $scope.login_text = JSON.parse($scope.logged_in).login;
     } else {
       $scope.href = '/login';
       $scope.login_text = 'Login';
@@ -40,7 +40,7 @@ angular.module('angularDirectives', [])
   console.log('login directive')
   return {
     restrict: 'E',
-    template: "<a href='{{ href }}'> {{ login_text }}</a>"
+    template: "<a href='{{ href }}'>{{ login_text }}</a>"
   };
 })
 .directive('coursesByCategory', function() {

@@ -37,6 +37,10 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			templateUrl: 'static/partials/supervisor_home.html',
 			controller: 'SupervisorHomeController'
 		})
+		.when('/student/:StudentID', {
+			templateUrl: '/static/partials/student/student_profile.html',
+			controller: 'StudentProfileController'
+		})
 		.when('/project', {
 			templateUrl: 'static/partials/sponsor_home.html',
 			controller: 'SponsorHomeController'

@@ -1,10 +1,15 @@
-<h3> My courses </h3>
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-4" ng-repeat="course in courses | orderBy: 'id':true ">
 			<div ng-include src="'static/partials/course/course_tile.html'"></div>
 		</div>
 	</div>
+	<div ng-if="courses.length === 0">
+		<div class="col-md-12 big-page empty-message">
+			<p> You're not enrolled in any courses! </p>
+		</div>
+	</div>
+
 </div>
 	<!-- <h4><a href="/course/{{ course.CourseID }}">{{ course.title }}</a></h4>
 	<p>{{ course.description }}<p> -->

@@ -46,9 +46,12 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		var title = $scope.title;
 		var description = $scope.description;
 		var category = $scope.category;
-
+		var deliverables = $scope.deliverables;
+		var requirements = $scope.requirements;
+		var payment = $scope.payment;
+		console.log("PAYMENT: "+payment);
 		//http post
-		$http.post('/api/project/create', {'title': title, 'description': description, 'category': category})
+		$http.post('/api/project/create', {'title': title, 'description': description, 'category': category, 'deliverables': deliverables, 'requirements': requirements, 'payment': payment})
 			.then(function(success) {
 				$location.path("/home");
 			}, function(error) {
@@ -58,6 +61,12 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - StudentHomeController: phoning home...");
+	$scope.student = JSON.parse($window.sessionStorage.logged_in);
+	$scope.currentTab = 1;
+	$scope.switch = function(tab) {
+		$scope.currentTab = tab;
+	}
+
 }])
 .controller('SupervisorHomeController', ['$scope', '$location', '$window', function($scope, $location, $window) {
 	console.log("controllers.js - SupervisorHomeController: phoning home...");
@@ -186,122 +195,6 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		console.log("controllers.js - UserListController: failed to get User list");
 	});
 }])
-.controller('ProjectListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
-	$http.get('/api/project')
-	.then(function(success) {
-		$scope.projects = success.data;
-	}, function(error) {
-		console.log(error);
-	});
-}])
-.controller('ProjectDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
-	var project_endpoint = '';
-	project_endpoint = '/api/project/' + $routeParams.ProjectID;
-	$scope.applicants = [];
-
-	$scope.showApplication = false;
-	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
-	$scope.userType = userType;
-	if(userType === 'student') {
-		console.log("show appl");
-		$scope.showApplication = true;
-	} else if(userType === 'sponsor') {
-		$scope.showApplication = false;
-		$http.get(project_endpoint+'/apply')
-			.then(function(success) {
-				console.log("Got applicants data.");
-				// console.log(success.data);
-				$scope.applications = success.data;
-				console.log("len:"+$scope.applications.length);
-				for(var i=0; i<$scope.applications.length; i++) {
-					//http get the student by id
-					console.log("i " + i);
-					console.log("app[i] " + $scope.applications[i].StudentID);
-					var ep = '/api/students/'+$scope.applications[i].StudentID;
-					console.log("ep = " + ep);
-
-					var studentId = $scope.applications[i].StudentID;
-
-					$http.get('/api/students/'+studentId)
-						.then(function(success2) {
-							// console.log
-							console.log(success2.data);
-							$http.get(project_endpoint+'/application/'+studentId)
-								.then(function(success3) {
-									success2.data.status = success3.data;
-									$scope.applicants.push(success2.data);
-								})
-
-							// console.log($scope.applicants);
-						}, function(error) {
-							console.log(error);
-						});
-				}
-				console.log(success);
-			}, function(error) {
-				console.log(error);
-			});
-	} else {
-		$scope.showApplication = false;
-	}
-
-
-	$http.get(project_endpoint)
-		.then(function(success) {
-			console.log("Got project data.");
-			$scope.project = success.data;
-		}, function(error) {
-			console.log(status);
-		});
-
-	if($scope.showApplication) {
-		console.log("Getting application status...");
-		$http.get(project_endpoint+'/apply')
-			.then(function(success) {
-				console.log(success);
-				$scope.data = success.data;
-				console.log($scope.data);
-				if($scope.data.length !== 0) {
-					$scope.hasApplied = true;
-				} else {
-					$scope.hasApplied = false;
-				}
-
-			}, function(error) {
-				console.log(status);
-			});
-	}
-
-	$scope.apply = function() {
-		$http.post(project_endpoint+'/apply', {'UserID': $window.sessionStorage.logged_in.UserID })
-			.then(function(success) {
-				$route.reload();
-			}, function(error) {
-				console.log(error);
-			});
-	}
-
-	$scope.cancel = function() {
-		$http.post(project_endpoint+'/cancel', {'UserID': $window.sessionStorage.logged_in.UserID })
-			.then(function(success) {
-				$route.reload();
-			}, function(error) {
-				console.log(error);
-			});
-	}
-
-	$scope.accept = function(studentId) {
-		console.log("triggerd accept: " + studentId);
-		$http.post(project_endpoint+'/application/'+studentId)
-			.then(function(success) {
-				console.log("post accept success");
-				$route.reload();
-			}, function(error) {
-				console.log(error);
-			});
-	}
-
-}])
 .controller('StudentListController', ['$scope', '$http', '$window', function ($scope, $http, $window) {
 	var endpoint = '/api/supervisor/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/student'
 	$http.get(endpoint)
@@ -331,4 +224,16 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 					console.log(error);
 				});
 		}
+}])
+.controller('StudentProfileController', ['$scope', '$routeParams', '$http', '$window', function ($scope, $routeParams, $http, $window) {
+	var endpoint ='/api/students/' + $routeParams.StudentID;
+	$http.get(endpoint)
+		.then(function(success) {
+			$scope.student = success.data;
+		}, function(error) {
+			console.log(error);
+		});
+	$scope.go_back = function() {
+		$window.history.back();
+	}
 }]);

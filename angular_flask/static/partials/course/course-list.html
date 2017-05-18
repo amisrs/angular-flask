@@ -1,6 +1,6 @@
 
 <h2>{{ category }}</h2>
-<div ng-repeat="course in courses | orderBy: 'id':true ">
+<div class="center-block" ng-repeat="course in courses | orderBy: 'id':true ">
 	<h4><a href="/course/{{ course.CourseID }}">{{ course.title }}</a></h4>
 	<p>{{ course.description }}<p>
 </div>

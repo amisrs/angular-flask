@@ -173,14 +173,17 @@ class Project(db.Model):
     SponsorID = db.Column(db.Integer, db.ForeignKey('sponsor.SponsorID'))
     StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
     title = db.Column(db.String(80))
-    description = db.Column(db.String(80))
+    description = db.Column(db.String(2000))
     category = db.Column(db.String(80))
     status = db.Column(db.String(80))
+    deliverables = db.Column(db.String(2000))
+    requirements = db.Column(db.String(2000))
+    payment = db.Column(db.Float)
 
     def __call__(arg1, arg2, arg3):
         print "call project"
 
-    def __init__(self, ProjectID, SponsorID, StudentID, title, description, category, status):
+    def __init__(self, ProjectID, SponsorID, StudentID, title, description, category, status, deliverables, requirements, payment):
         self.ProjectID = ProjectID
         self.SponsorID = SponsorID
         self.StudentID = StudentID
@@ -188,6 +191,9 @@ class Project(db.Model):
         self.description = description
         self.category = category
         self.status = status
+        self.deliverables = deliverables
+        self.requirements = requirements
+        self.payment = payment
 
     def __repr__(self):
         return json.dumps({
@@ -197,7 +203,10 @@ class Project(db.Model):
             'title': self.title,
             'description': self.description,
             'category': self.category,
-            'status': self.status
+            'status': self.status,
+            'deliverables': self.deliverables,
+            'requirements': self.requirements,
+            'payment': self.payment
         })
 
 
