@@ -19,7 +19,7 @@
           <input class="btn btn-success header-button" type="submit" value="Apply">
         </form>
   		</div>
-      <div class="col-md-2 pull-right" ng-if="!eligible && showApplication">
+      <div class="col-md-2 pull-right" ng-if="!eligible && showApplication && !hasApplied">
         <form ng-submit="apply()">
           <input class="btn header-button" type="submit" value="Requirements not met" disabled="true">
         </form>
@@ -63,6 +63,18 @@
       <div class="col-md-8">
         <h4>Prerequisites</h4>
         <textarea class="big-textarea form-control" readonly="true">{{ project.requirements }}</textarea>
+      </div>
+    </div>
+
+    <div class="row" ng-if="showApplication && hasApplied && data[0].application_status === 'accepted'">
+      <div class="col-md-2">
+      </div>
+      <div class="col-md-8">
+
+        <h4> Submit Work</h4>
+        <form name="form">
+          <input type="file" class="button" ngf-select ng-model="file" name="file">
+        </form>
       </div>
     </div>
   </div>

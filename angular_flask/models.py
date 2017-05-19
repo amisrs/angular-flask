@@ -257,6 +257,40 @@ class Application(db.Model):
             'application_status': self.application_status
         })
 
+class Submission(db.Model):
+    SubmissionID = db.Column(db.Integer, primary_key=True)
+    ProjectID = db.Column(db.Integer, db.ForeignKey('project.ProjectID'))
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
+    feedback = db.Column(db.String(2000))
+    description = db.Column(db.String(2000))
+    date = db.Column(db.Date)
+    item = db.Column(db.BLOB)
+
+    def __call__(arg1, arg2, arg3):
+        print "call submission"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, SubmissionID, ProjectID, StudentID, feedback, description, date, item):
+        self.SubmissionID = SubmissionID
+        self.ProjectID = ProjectID
+        self.StudentID = StudentID
+        self.feedback = feedback
+        self.description = description
+        self.date = date
+        self.item = item
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'SubmissionID': self.SubmissionID,
+            'ProjectID': self.ProjectID,
+            'StudentID': self.StudentID,
+            'feedback': self.feedback,
+            'description': self.description,
+            'date': self.date,
+            'item': self.item
+        })
+
 # models for which we want to create API endpoints
 app.config['API_MODELS'] = {
                                 'course': Course,
@@ -268,7 +302,8 @@ app.config['API_MODELS'] = {
                                 'sponsor': Sponsor,
                                 'project': Project,
                                 'enrolment': Enrolment,
-                                'application': Application
+                                'application': Application,
+                                'submission': Submission
                             }
 
 # models for which we want to create CRUD-style URL endpoints,
@@ -283,5 +318,6 @@ app.config['CRUD_URL_MODELS'] = {
                                     'sponsor': Sponsor,
                                     'project': Project,
                                     'enrolment': Enrolment,
-                                    'application': Application
+                                    'application': Application,
+                                    'submission': Submission
                                 }

@@ -126,7 +126,7 @@ def create_user():
     if 'logged_in' in session:
         creator = session['logged_in']
         if creator['userType'] == 'supervisor':
-            supervisor = Supervisor.query.filter(Supervisor.UserID == creator['UserID']).all()[0]
+            supervisor = Supervisor.query.filter(Supervisor.UserID == creator['UserID']).first()
 
 
     json_data = request.get_json()
@@ -148,7 +148,7 @@ def create_user():
         db.session.add(new_user)
         db.session.commit()
         print "USER CREATED OK"
-        inserted_user = User.query.filter(User.login == json_data['username']).all()[0]
+        inserted_user = User.query.filter(User.login == json_data['username']).first()
         print inserted_user
         if json_data['userType'] == 'student':
             new_student = Student(None, inserted_user.UserID, supervisor.SupervisorID)
@@ -179,11 +179,11 @@ def get_enrolled_courses(user_id):
     completed_courses = []
 
     print "controllers.py - getting enrolled courses"
-    student = Student.query.filter(Student.UserID == user_id).all()[0]
+    student = Student.query.filter(Student.UserID == user_id).first()
     enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
     for enrolment in enrolled_courses:
         print 'student ' + str(student.StudentID) + ' enrolled in ' + str(enrolment)
-        course = Course.query.filter(Course.CourseID == enrolment.CourseID).all()[0];
+        course = Course.query.filter(Course.CourseID == enrolment.CourseID).first();
 
         if enrolment.status != 'completed':
             ongoing_courses.append(course)
@@ -197,10 +197,10 @@ def get_enrolled_courses(user_id):
 def get_not_enrolled_courses(user_id):
     courses = []
     print "controllers.py - getting not enrolled courses"
-    student = Student.query.filter(Student.UserID == user_id).all()[0]
+    student = Student.query.filter(Student.UserID == user_id).first()
     enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
     for enrolment in enrolled_courses:
-        course = Course.query.filter(Course.CourseID == enrolment.CourseID).all()[0];
+        course = Course.query.filter(Course.CourseID == enrolment.CourseID).first();
         courses.append(course.CourseID)
     all_courses = Course.query.all()
     all_courses_iter = all_courses
@@ -278,11 +278,11 @@ def get_accepted_projects(student_id):
     result = []
     my_projects = []
     print "student_id: " + str(student_id)
-    student = Student.query.filter(Student.StudentID == student_id).all()[0]
+    student = Student.query.filter(Student.StudentID == student_id).first()
     accepted_projects = Application.query.filter(Application.StudentID == student.StudentID).all()
     for application in accepted_projects:
         print 'student ' + str(student.StudentID) + ' accepted in ' + str(application)
-        project = Project.query.filter(Project.ProjectID == application.ProjectID).all()[0];
+        project = Project.query.filter(Project.ProjectID == application.ProjectID).first();
         my_projects.append(project)
     result.append(my_projects)
 
@@ -299,7 +299,7 @@ def get_accepted_projects(student_id):
 @app.route('/api/supervisor/<user_id>/student', methods=['GET'])
 def get_supervisor_students(user_id):
     students = []
-    supervisor = Supervisor.query.filter(Supervisor.UserID == user_id).all()[0]
+    supervisor = Supervisor.query.filter(Supervisor.UserID == user_id).first()
     students = db.session.query(User).join(Student).filter(Student.SupervisorID == supervisor.SupervisorID).all()
     print str(students)
     return str(students)
@@ -334,7 +334,7 @@ def create_course():
 
 @app.route('/api/course/<courseid>/complete', methods=['POST', 'GET'])
 def complete(courseid):
-    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).first()
     if request.method == 'POST':
         enrolment = Enrolment.query\
             .filter(Enrolment.StudentID == student.StudentID)\
@@ -347,7 +347,7 @@ def complete(courseid):
 @app.route('/api/course/<courseid>/enrol', methods=['POST', 'GET'])
 def enrol(courseid):
     print "enrol endpoint query"
-    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).first()
     if request.method == 'POST':
         print "controllers.py - /api/course/%s/enrol POST" % str(courseid)
         print session['logged_in']
@@ -364,7 +364,7 @@ def enrol(courseid):
 
 @app.route('/api/course/<courseid>/unenrol', methods=['POST', 'GET'])
 def unenrol(courseid):
-    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).first()
     if request.method == 'POST':
         new_enrolment = Enrolment.query\
             .filter(Enrolment.StudentID == student.StudentID)\
@@ -405,7 +405,7 @@ def create_project():
     if 'logged_in' in session:
         creator = session['logged_in']
         if creator['userType'] == 'sponsor':
-            sponsor = Sponsor.query.filter(Sponsor.UserID == creator['UserID']).all()[0]
+            sponsor = Sponsor.query.filter(Sponsor.UserID == creator['UserID']).first()
         else:
             return "Incorrect user type."
     else:
@@ -418,7 +418,7 @@ def create_project():
 
 @app.route('/api/project/<project_id>', methods=['GET'])
 def get_project(project_id):
-    project = Project.query.filter(Project.ProjectID == project_id).all()[0]
+    project = Project.query.filter(Project.ProjectID == project_id).first()
     print str(project)
     return str(project)
 
@@ -431,9 +431,9 @@ def apply(project_id):
         return "Not logged in."
 
     if userType == 'student':
-        student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+        student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).first()
     elif userType == 'sponsor':
-        sponsor = Sponsor.query.filter(Sponsor.UserID == session['logged_in']['UserID']).all()[0]
+        sponsor = Sponsor.query.filter(Sponsor.UserID == session['logged_in']['UserID']).first()
 
     if request.method == 'POST':
         if userType != 'student':
@@ -474,7 +474,7 @@ def apply(project_id):
 
 @app.route('/api/project/<project_id>/cancel', methods=['POST', 'GET'])
 def cancel(project_id):
-    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).first()
     if request.method == 'POST':
         new_application = Application.query\
             .filter(Application.StudentID == student.StudentID)\
@@ -520,7 +520,7 @@ def get_application_status(project_id, student_id):
 # @app.route('/api/sponsor/<user_id>/project', methods=['GET'])
 # def get_sponsor_projects(user_id):
 #     projects = []
-#     sponsor = Sponsor.query.filter(Sponsor.UserID == user_id).all()[0]
+#     sponsor = Sponsor.query.filter(Sponsor.UserID == user_id).first()
 #     projects = Project.query.filter(Project.SponsorID == sponsor.SponsorID).all()
 #     print str(projects)
 #     return str(projects)

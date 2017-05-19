@@ -149,7 +149,7 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 				console.log($scope.completed_courses);
 				for(var i=0; i<$scope.completed_courses.length; i++) {
 					console.log($scope.completed_courses[i]);
-					if($scope.project.requirements.indexOf($scope.completed_courses[i].title) !== -1) {
+					if(!$scope.project.requirements || $scope.project.requirements.indexOf($scope.completed_courses[i].title) !== -1) {
 						$scope.eligible = true;
 					}
 				}
