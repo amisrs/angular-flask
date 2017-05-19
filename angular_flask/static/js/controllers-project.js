@@ -23,6 +23,30 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 		console.log(error);
 	});
 }])
+.controller('ProjectListSponsorController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
+
+	$http.get('/api/user/'+JSON.parse($window.sessionStorage.logged_in).UserID+'/sponsor')
+		.then(function(success) {
+			$http.get('/api/sponsor/'+success.data.SponsorID+'/project')
+				.then(function(success) {
+					$scope.open_projects = [];
+					$scope.ongoing_projects = [];
+					$scope.completed_projects = [];
+
+					for(var i=0; i<success.data.length; i++) {
+						if(success.data[i].status === 'open') {
+							$scope.open_projects.push(success.data[i])
+						} else if(success.data[i].status === 'ongoing') {
+							$scope.ongoing_projects.push(success.data[i])
+						} else if(success.data[i].status === 'completed') {
+							$scope.completed_projects.push(success.data[i])
+						}
+					}
+				}, function(error) {
+					console.log(error);
+				})
+		})
+}])
 .controller('ProjectListStudentController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
 
 	$http.get('/api/user/'+JSON.parse($window.sessionStorage.logged_in).UserID+'/student')
@@ -66,7 +90,7 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 					var studentId = $scope.applications[i].StudentID;
 					get_application_for_student(studentId);
 				}
-				console.log(success);
+				// console.log(success);
 			}, function(error) {
 				console.log(error);
 			});
@@ -79,7 +103,7 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 		$http.get('/api/students/'+studentId)
 			.then(function(success2) {
 				// console.log
-				console.log(success2.data);
+				// console.log(success2.data);
 				$http.get(project_endpoint+'/application/'+studentId)
 					.then(function(success3) {
 						console.log(success3.data);
@@ -95,15 +119,42 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 	$http.get(project_endpoint)
 		.then(function(success) {
 			console.log("Got project data.");
+			console.log(success);
 			$scope.project = success.data;
 			if($scope.project.status === "ongoing") {
 				$scope.projectOngoing = true;
+				get_student_user($scope.project.StudentID);
+
 			}
 		}, function(error) {
 			console.log(status);
 		});
 
+	var get_student_user = function(StudentID) {
+		$http.get('/api/students/'+StudentID)
+			.then(function(success) {
+				console.log("engaged");
+				console.log(success);
+				$scope.engagedApplicant = success.data;
+			}, function(error) {
+				console.log(error);
+			})
+	}
+	$scope.eligible = false;
 	if($scope.showApplication) {
+		console.log("Getting eligibility...");
+		$http.get('/api/user/'+JSON.parse($window.sessionStorage.logged_in).UserID+'/course')
+			.then(function(success) {
+				$scope.completed_courses = success.data[1];
+				console.log($scope.completed_courses);
+				for(var i=0; i<$scope.completed_courses.length; i++) {
+					console.log($scope.completed_courses[i]);
+					if($scope.project.requirements.indexOf($scope.completed_courses[i].title) !== -1) {
+						$scope.eligible = true;
+					}
+				}
+			})
+
 		console.log("Getting application status...");
 		$http.get(project_endpoint+'/apply')
 			.then(function(success) {
@@ -150,4 +201,8 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 				console.log(error);
 			});
 	}
+	$scope.go_back = function() {
+		$window.history.back();
+	}
+
 }]);

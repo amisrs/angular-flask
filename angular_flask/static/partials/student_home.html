@@ -25,7 +25,7 @@
   <div ng-controller="ProjectListStudentController">
     <div class="container-fluid">
     	<div class="row">
-    		<div class="col-md-4" ng-repeat="project in accepted_projects | orderBy: 'id':true ">
+    		<div class="col-md-4 panel-body" ng-repeat="project in accepted_projects | orderBy: 'id':true ">
     			<div ng-include src="'static/partials/project/project_tile.html'"></div>
     		</div>
     	</div>
@@ -41,7 +41,7 @@
   <div ng-controller="ProjectListStudentController">
     <div class="container-fluid">
     	<div class="row">
-    		<div class="col-md-4" ng-repeat="project in other_projects | orderBy: 'id':true ">
+    		<div class="col-md-4 panel-body" ng-repeat="project in other_projects | orderBy: 'id':true ">
     			<div ng-include src="'static/partials/project/project_tile.html'"></div>
     		</div>
     	</div>

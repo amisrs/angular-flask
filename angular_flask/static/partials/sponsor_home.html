@@ -1,6 +1,6 @@
 <div class="top-pane">
   <div class="container">
-    <h1> Hello, {{ sponsor.FirstName }}. </h1>
+    <h1> Hello, {{ sponsor.login }}. </h1>
   </div>
 </div>
 <div class="container">
@@ -14,7 +14,7 @@
   </div>
 </div>
 
-<div ng-controller="ProjectListController">
+<div ng-controller="ProjectListSponsorController">
   <div class="container" ng-if="currentTab === 1">
     <div class="col-md-4 panel-body" ng-repeat="project in ongoing_projects | orderBy: 'id':true ">
       <div ng-include src="'static/partials/project/project_tile.html'"></div>
@@ -27,7 +27,7 @@
 
   </div>
   <div class="container" ng-if="currentTab === 2">
-    <div class="col-md-4" ng-repeat="project in open_projects | orderBy: 'id':true ">
+    <div class="col-md-4 panel-body" ng-repeat="project in open_projects | orderBy: 'id':true ">
       <div ng-include src="'static/partials/project/project_tile.html'"></div>
     </div>
     <div ng-if="open_projects.length === 0">
@@ -38,7 +38,7 @@
 
   </div>
   <div class="container" ng-if="currentTab === 3">
-    <div class="col-md-4" ng-repeat="project in completed_projects | orderBy: 'id':true ">
+    <div class="col-md-4 panel-body" ng-repeat="project in completed_projects | orderBy: 'id':true ">
       <div ng-include src="'static/partials/project/project_tile.html'"></div>
     </div>
     <div ng-if="completed_projects.length === 0">

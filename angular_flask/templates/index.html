@@ -8,8 +8,12 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/static/css/main.css">
 	<link rel="stylesheet" href="/static/css/angular-carousel.css" type="text/css">
+	<script src="https://use.fontawesome.com/0ab92e4667.js"></script>
+
 	<script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
 	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="/static/lib/jquery/jquery.min.js"></script>
+
 	<script src="/static/lib/angular/angular.js"></script>
 	<script src="/static/lib/angular/angular-resource.js"></script>
 	<script src="/static/lib/angular/angular-route.js"></script>
@@ -25,9 +29,10 @@
  	<script src="/static/js/services.js"></script>
 	<script src="/static/js/directives.js"></script>
 
-	<script src="/static/lib/jquery/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/static/js/angular-modal-service.min.js"></script>
+
 	<script type="text/javascript">
 		$(function() {
 		 $('.scroll-down').click (function() {
@@ -48,11 +53,11 @@
 				<div ng-if="logged_in_status === 'false'" class="navbar-header pull-right"><a class="navbar-brand" href="/login">Login</a></div>
 
 				<div ng-if="logged_in_status === 'true'" class="dropdown pull-right">
-				  <button class="dropbtn">{{ login_text }}</button>
+				  <button class="dropbtn"><i class="fa fa-user-circle" aria-hidden="true"></i></button>
 				  <div class="dropdown-content">
-				    <a href="/home">Home</a>
+				    <a href="/home">Home <i class="pull-right fa fa-home" aria-hidden="true"></i></a>
 				    <a href="#">Link 2</a>
-				    <a href="/logout">Logout</a>
+				    <a href="/logout">Logout <i class="pull-right fa fa-sign-out" aria-hidden="true"></i></a>
 				  </div>
 				</div>
 			</div>

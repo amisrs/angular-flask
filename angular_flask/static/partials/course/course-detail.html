@@ -11,14 +11,14 @@
 		<div class="col-md-10">
 			<h2>{{ course.title }}</h2>
 		</div>
-		<div class="col-md-2 pull-right" ng-if="!isEnrolled">
+		<div class="col-md-2 pull-right" ng-if="!isEnrolled && enrolment.status !== 'completed'">
 			<form ng-submit="enrol()">
 				<input class="btn btn-success header-button" type="submit" value="Enrol">
 			</form>
 		</div>
-		<div class="col-md-2 pull-right" ng-if="isEnrolled">
+		<div class="col-md-2 pull-right" ng-if="isEnrolled && enrolment.status !== 'completed'">
 			<form ng-submit="unenrol()">
-				<input class="btn btn-danger header-button" type="submit" value="Leave">
+				<input class="btn btn-danger header-button" type="submit" value="Drop Course">
 			</form>
 		</div>
 	</div>
@@ -27,11 +27,19 @@
 			<h4>{{ course.description }}</h4>
 		</div>
 	</div>
-	<div class="row" ng-if="isEnrolled">
-		<hr>
+	<div ng-if="isEnrolled">
+		<hr />
+		<div class="html-content" ng-bind-html="htmlContent"></div>
 
-		Enrolled!
-		Here's all the stuff that's shown when you're enrolled.
+		<div class="row" ng-if="enrolment.status !== 'completed'">
+			<div class="col-md-12">
+				<form ng-submit="complete()">
+					<input class="btn btn-success complete-button" type="submit" value="Complete Course">
+				</form>
+			</div>
+
+		</div>
+
 	</div>
 
 </div>

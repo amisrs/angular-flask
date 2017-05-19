@@ -15,8 +15,10 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 		var title = $scope.title;
 		var description = $scope.description;
 		var category = $scope.category;
+		var header_image = $scope.header_image;
+		var content = $scope.content;
 
-		$http.post('/api/course/create', {'title': title, 'description': description, 'category': category})
+		$http.post('/api/course/create', {'title': title, 'description': description, 'category': category, 'header_image': header_image, 'content': content})
 			.then(function(success) {
 				$location.path('/')
 			}, function(error) {
@@ -78,7 +80,8 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 		$http.get(enrolled_course_endpoint)
 			.then(function(success) {
 				console.log(success.data);
-				$scope.courses = success.data;
+				$scope.ongoing_courses = success.data[0];
+				$scope.completed_courses = success.data[1];
 			}, function(error) {
 				console.log(error);
 			})
@@ -137,8 +140,9 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
     console.log("controllers.js - CourseListController: failed to get Course list");
   })
 }])
-.controller('CourseDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
+.controller('CourseDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', '$sce', 'ModalService', function($scope, $routeParams, Course, $http, $window, $location, $route, $sce, ModalService) {
 	$scope.isEnrolled = false;
+	var endpoint = '';
 	var course_endpoint = '';
 	var course_unenrol_endpoint = '';
 
@@ -146,12 +150,13 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 	var courseQuery = Course.get({ CourseID: $routeParams.CourseID }, function(course) {
 		$scope.course = course;
 		console.log("COURSE: " + course);
-		course_endpoint = '/api/course/' + $scope.course.CourseID + '/enrol';
-		course_unenrol_endpoint = '/api/course/' + $scope.course.CourseID + '/unenrol';
-
-		$http.get(course_endpoint, {'UserID': $window.sessionStorage.logged_in.UserID})
+		endpoint = '/api/course/' + $scope.course.CourseID;
+		$scope.htmlContent = $sce.trustAsHtml($scope.course.content);
+		$http.get(endpoint+'/enrol', {'UserID': $window.sessionStorage.logged_in.UserID})
 			.then(function(success) {
-				success.data === 'True' ? $scope.isEnrolled = true : $scope.isEnrolled = false;
+				console.log(success);
+				$scope.enrolment = success.data;
+				success.data !== 'None' ? $scope.isEnrolled = true : $scope.isEnrolled = false;
 				console.log("isEnrolled " + $scope.isEnrolled)
 			}, function(error) {
 				console.log(status);
@@ -161,7 +166,7 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 
 	$scope.enrol = function() {
 		console.log("controllers-course.js - " + course_endpoint);
-		$http.post(course_endpoint, {'UserID': $window.sessionStorage.logged_in.UserID })
+		$http.post(endpoint+'/enrol', {'UserID': $window.sessionStorage.logged_in.UserID })
 			.then(function(success) {
 				$route.reload();
 			}, function(error) {
@@ -170,12 +175,26 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 	}
 
 	$scope.unenrol = function() {
-		$http.post(course_unenrol_endpoint, {'UserID': $window.sessionStorage.logged_in.UserID })
+		$http.post(endpoint+'/unenrol', {'UserID': $window.sessionStorage.logged_in.UserID })
 			.then(function(success) {
 				$location.path('/home');
 			}, function(error) {
 				console.log(error);
 			});
 	}
+
+	$scope.complete = function() {
+		$http.post(endpoint+'/complete')
+			.then(function(success) {
+				congratulation();
+			}, function(error) {
+				console.log(error)
+			});
+	}
+
+	var congratulation = function() {
+		alert("nice one");
+		$location.path('/home');
+	}
 	//get the stuff from first page here
-}]);
+}])

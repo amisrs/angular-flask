@@ -66,6 +66,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - StudentHomeController: phoning home...");
+	
 	$scope.student = JSON.parse($window.sessionStorage.logged_in);
 	$scope.currentTab = 1;
 	$scope.switch = function(tab) {

@@ -50,11 +50,17 @@ api_session = api_manager.session
 @app.route('/students')
 @app.route('/student/<student_id>')
 @app.route('/register')
-@app.route('/project')
 @app.route('/project/<project_id>')
 
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
+
+@app.route('/project')
+def sponsor_pages(**kwargs):
+    if session['logged_in']['userType'] == 'sponsor':
+        return make_response(open('angular_flask/templates/index.html').read())
+    else:
+        return redirect('/home')
 
 @app.route('/admin')
 @app.route('/admin/create_user')
@@ -168,15 +174,24 @@ def create_user():
 # probably change these to /api/student
 @app.route('/api/user/<user_id>/course', methods=['GET'])
 def get_enrolled_courses(user_id):
-    courses = []
+    result = []
+    ongoing_courses = []
+    completed_courses = []
+
     print "controllers.py - getting enrolled courses"
     student = Student.query.filter(Student.UserID == user_id).all()[0]
     enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
     for enrolment in enrolled_courses:
         print 'student ' + str(student.StudentID) + ' enrolled in ' + str(enrolment)
         course = Course.query.filter(Course.CourseID == enrolment.CourseID).all()[0];
-        courses.append(course)
-    return str(courses)
+
+        if enrolment.status != 'completed':
+            ongoing_courses.append(course)
+        else:
+            completed_courses.append(course)
+    result.append(ongoing_courses)
+    result.append(completed_courses)
+    return str(result)
 
 @app.route('/api/user/<user_id>/unenrolled', methods=['GET'])
 def get_not_enrolled_courses(user_id):
@@ -206,6 +221,25 @@ def get_student_by_user(user_id):
     print student_join
     for (user, student) in student_join:
         joined_item['StudentID'] = student.StudentID
+        joined_item['FirstName'] = user.FirstName
+        joined_item['LastName'] = user.LastName
+        joined_item['UserID'] = user.UserID
+        joined_item['login'] = user.login
+    # print "JOINED ITEM: " + json.dumps(student_join)
+
+    print str(joined_item)
+    return json.dumps(joined_item), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+@app.route('/api/user/<user_id>/sponsor', methods=['GET'])
+def get_sponsor_by_user(user_id):
+    joined_item = {}
+
+    sponsor_join = db.session.query(User, Sponsor).join(Sponsor)\
+        .filter(Sponsor.UserID == user_id).all()
+
+    print sponsor_join
+    for (user, sponsor) in sponsor_join:
+        joined_item['SponsorID'] = sponsor.SponsorID
         joined_item['FirstName'] = user.FirstName
         joined_item['LastName'] = user.LastName
         joined_item['UserID'] = user.UserID
@@ -292,11 +326,22 @@ def create_course():
     json_data = request.get_json()
     print "controllers.py - /api/user/create POST : JSON DATA ====\n\n"
     print json_data
-    new_course = Course(None, json_data['title'], json_data['description'], json_data['category'])
+    new_course = Course(None, json_data['title'], json_data['description'], json_data['category'], json_data['header_image'], json_data['content'])
     db.session.add(new_course)
     db.session.commit()
     return render_template('index.html')
 
+
+@app.route('/api/course/<courseid>/complete', methods=['POST', 'GET'])
+def complete(courseid):
+    student = Student.query.filter(Student.UserID == session['logged_in']['UserID']).all()[0]
+    if request.method == 'POST':
+        enrolment = Enrolment.query\
+            .filter(Enrolment.StudentID == student.StudentID)\
+            .filter(Enrolment.CourseID == int(courseid)).first()
+        enrolment.status = 'completed'
+        db.session.commit()
+    return "OK"
 
 #enrol with currently logged in user
 @app.route('/api/course/<courseid>/enrol', methods=['POST', 'GET'])
@@ -314,8 +359,8 @@ def enrol(courseid):
         print "controllers.py - /api/course/%s/enrol GET" % str(courseid)
         enrolment = Enrolment.query\
             .filter(Enrolment.StudentID == student.StudentID)\
-            .filter(Enrolment.CourseID == courseid).all()
-        return str(len(enrolment) > 0)
+            .filter(Enrolment.CourseID == courseid).first()
+        return str(enrolment)
 
 @app.route('/api/course/<courseid>/unenrol', methods=['POST', 'GET'])
 def unenrol(courseid):
@@ -328,6 +373,12 @@ def unenrol(courseid):
         db.session.delete(new_enrolment)
         db.session.commit()
     return "OK"
+
+@app.route('/api/sponsor/<sponsor_id>/project', methods=['GET'])
+def get_sponsor_projects(sponsor_id):
+    projects = Project.query.filter(Project.SponsorID == sponsor_id).all()
+    print str(projects)
+    return str(projects)
 
 @app.route('/api/project/', methods=['GET'])
 def get_projects():
@@ -461,17 +512,18 @@ def get_application_status(project_id, student_id):
 
         project = Project.query.filter(Project.ProjectID == int(project_id)).first()
         project.status = 'ongoing'
+        project.StudentID = student_id
         db.session.commit()
 
         return "OK"
 
-@app.route('/api/sponsor/<user_id>/project', methods=['GET'])
-def get_sponsor_projects(user_id):
-    projects = []
-    sponsor = Sponsor.query.filter(Sponsor.UserID == user_id).all()[0]
-    projects = Project.query.filter(Project.SponsorID == sponsor.SponsorID).all()
-    print str(projects)
-    return str(projects)
+# @app.route('/api/sponsor/<user_id>/project', methods=['GET'])
+# def get_sponsor_projects(user_id):
+#     projects = []
+#     sponsor = Sponsor.query.filter(Sponsor.UserID == user_id).all()[0]
+#     projects = Project.query.filter(Project.SponsorID == sponsor.SponsorID).all()
+#     print str(projects)
+#     return str(projects)
 
 @app.route('/_session')
 def get_from_session():

@@ -1,8 +1,19 @@
 
-<div>
-  <div ng-repeat="category in categories">
-    <div class="row">
-      <courses-by-category ng-controller="CourseCategoryController" ng-model="category"></courses-by-category>
+<div class="container-fluid">
+  <div class="row" ng-repeat="category in categories">
+
+    <h4 class="capitalize"> {{ category }} </h4>
+    <hr />
+    <div ng-controller="CourseCategoryController">
+      <!-- <courses-by-category ng-controller="CourseCategoryController" ng-model="category"></courses-by-category> -->
+    		<div class="col-md-4 panel-body" ng-repeat="course in courses | orderBy: 'id':true ">
+    			<div ng-include src="'static/partials/course/course_tile.html'"></div>
+    		</div>
+    	<div ng-if="courses.length === 0">
+    		<div class="col-md-12 big-page empty-message">
+    			<p> You're not enrolled in any courses! </p>
+    		</div>
+    	</div>
     </div>
   </div>
 </div>
