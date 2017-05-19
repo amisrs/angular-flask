@@ -3,7 +3,7 @@
 /* Directives */
 
 angular.module('angularDirectives', [])
-.controller('login-controller', ['$scope', '$window', '$location', function($scope, $window, $location) {
+.controller('login-controller', ['$scope', '$window', '$location', '$route', function($scope, $window, $location, $route) {
   console.log('login-controller')
   console.log($location.path());
   $scope.showNavbar = true;
@@ -25,8 +25,7 @@ angular.module('angularDirectives', [])
       $scope.href = '/login';
       $scope.login_text = 'Login';
     }
-
-
+    $route.reload();
   }
 
   updateLogin();

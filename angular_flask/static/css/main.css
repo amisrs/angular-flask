@@ -1,6 +1,6 @@
 /* Dropdown Button  https://www.w3schools.com/howto/howto_css_dropdown.asp*/
 .dropbtn {
-    background-color: #4CAF50;
+    background-color: #3a3735;
     color: white;
     font-size: 16px;
     border: none;
@@ -49,7 +49,7 @@
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {
-    background-color: #3e8e41;
+    background-color: #e27c00;
 }
 
 .top-pane {
@@ -72,6 +72,20 @@
 .top-pills {
 	margin-bottom: 40px;
 }
+
+.top-pills li.active a,
+.top-pills li.active a:focus,
+.top-pills li.active a:hover {
+	background-color: #e27c00;
+}
+/*.top-pills li.active a:hover{
+	background-color: #a83e01;
+}
+*/
+.top-pills li a {
+	color: #808080;
+}
+
 
 .empty-message {
 	color: #808080;
@@ -159,6 +173,13 @@
 	margin-left: 0;
 }
 
+.navbar {
+  background-color: #3a3735;
+  border-radius: 0px;
+  border: 0px;
+
+}
+
 .navbar .nav > li > div > custom-ng-login {
 	display: block;
   float: none;
@@ -179,12 +200,35 @@
 
 .cardback {
 	height: 120px;
-	background-color: #383D52;
+	background-color: #282828;
+}
+
+.cardback-payment {
+  position: absolute;
+  right: 0px;
+  z-index: 999;
+  padding:12px;
+  margin: 8px;
+  border-radius: 4px;
+
+  color: #FFFFFF;
+  background-color: #e27c00;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .cardfront {
 	background-color: #EEEEEE;
-	text-align: center;
+	/*text-align: center;*/
+  padding: 8px;
+}
+
+.card-title a {
+  color: #282828;
+}
+
+.card-text {
+  color: #808080;
 }
 
 .header-button {

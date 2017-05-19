@@ -40,15 +40,15 @@
 </head>
 <body class="ng-cloak bignity">
 	<nav ng-if="location!=='/'" class="navbar navbar-default no-margin">
-		<div class="container-fluid">
+		<div class="container-fluid" ng-controller="login-controller">
 			<div class="row">
 				<div class="navbar-header">
 					<a class="navbar-brand" href="/home">Git Gud</a>
 				</div>
 				<div ng-if="logged_in_status === 'false'" class="navbar-header pull-right"><a class="navbar-brand" href="/login">Login</a></div>
 
-				<div ng-if="logged_in_status !== 'false'" class="dropdown pull-right">
-				  <button class="dropbtn">Login</button>
+				<div ng-if="logged_in_status === 'true'" class="dropdown pull-right">
+				  <button class="dropbtn">{{ login_text }}</button>
 				  <div class="dropdown-content">
 				    <a href="/home">Home</a>
 				    <a href="#">Link 2</a>

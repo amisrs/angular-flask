@@ -31,6 +31,11 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 .controller('SponsorHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - SponsorHomeController: phoning home...");
 	$scope.isShowingNew = false;
+	$scope.sponsor = JSON.parse($window.sessionStorage.logged_in);
+	$scope.currentTab = 1;
+	$scope.switch = function(tab) {
+		$scope.currentTab = tab;
+	}
 
 	$scope.showNew = function() {
 		console.log("SHOW NEW");
