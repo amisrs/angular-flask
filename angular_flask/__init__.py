@@ -3,7 +3,7 @@ import json
 from flask import Flask, request, Response
 from flask import render_template, send_from_directory, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 app.config.from_object('angular_flask.settings')
 

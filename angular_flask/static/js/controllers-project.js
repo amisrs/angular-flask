@@ -68,35 +68,37 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 	$scope.showApplication = false;
 	$scope.projectOngoing = false;
 	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
+	$scope.currentUser = JSON.parse($window.sessionStorage.logged_in).UserID;
 	$scope.userType = userType;
 	if(userType === 'student') {
 		console.log("show appl");
 		$scope.showApplication = true;
 	} else if(userType === 'sponsor') {
 		$scope.showApplication = false;
-		$http.get(project_endpoint+'/apply')
-			.then(function(success) {
-				console.log("Got applicants data.");
-				// console.log(success.data);
-				$scope.applications = success.data;
-				console.log("len:"+$scope.applications.length);
-				for(var i=0; i<$scope.applications.length; i++) {
-					//http get the student by id
-					console.log("i " + i);
-					console.log("app[i] " + $scope.applications[i].StudentID);
-					var ep = '/api/students/'+$scope.applications[i].StudentID;
-					console.log("ep = " + ep);
-
-					var studentId = $scope.applications[i].StudentID;
-					get_application_for_student(studentId);
-				}
-				// console.log(success);
-			}, function(error) {
-				console.log(error);
-			});
 	} else {
 		$scope.showApplication = false;
 	}
+	$http.get(project_endpoint+'/apply')
+		.then(function(success) {
+			console.log("Got applicants data.");
+			// console.log(success.data);
+			$scope.applications = success.data;
+			console.log("len:"+$scope.applications.length);
+			for(var i=0; i<$scope.applications.length; i++) {
+				//http get the student by id
+				console.log("i " + i);
+				console.log("app[i] " + $scope.applications[i].StudentID);
+				var ep = '/api/students/'+$scope.applications[i].StudentID;
+				console.log("ep = " + ep);
+
+				var studentId = $scope.applications[i].StudentID;
+				get_application_for_student(studentId);
+			}
+			// console.log(success);
+		}, function(error) {
+			console.log(error);
+		});
+
 
   var get_application_for_student = function(studentId) {
 		console.log("studentId: " + studentId);
@@ -136,10 +138,25 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 				console.log("engaged");
 				console.log(success);
 				$scope.engagedApplicant = success.data;
+
+				$http.get('/api/project/'+$scope.project.ProjectID+'/submit')
+					.then(function(success) {
+						console.log(success);
+						$scope.submissions = success.data;
+						for(var i=0; i<$scope.submissions.length; i++) {
+							var subname = 'feedback_'+$scope.submissions[i].SubmissionID;
+							$scope.feedback[subname] = $scope.submissions[i].feedback;
+						}
+
+					}, function(error) {
+						console.log(error);
+					})
+
 			}, function(error) {
 				console.log(error);
 			})
 	}
+
 	$scope.eligible = false;
 	if($scope.showApplication) {
 		console.log("Getting eligibility...");
@@ -201,8 +218,60 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 				console.log(error);
 			});
 	}
+	var work_file = '';
+	$scope.submit_work = function() {
+		// var item = $scope.formData.file;
+		console.log($scope.fd);
+		var description = $scope.formData.work_description;
+		console.log($scope.formData.work_description);
+		console.log("----");
+		console.log(description);
+
+		$scope.fd.append("description", description);
+
+		$http.post('/api/project/'+$scope.project.ProjectID+'/submit', $scope.fd, {
+			transformRequest: angular.identity,
+			headers: {'Content-Type': undefined}
+		}).then(function(success) {
+			console.log(success);
+			$route.reload();
+		}, function(error) {
+			console.log(error);
+		});
+	}
+
+	$scope.add_file = function(files) {
+		console.log(files);
+		$scope.fd = new FormData();
+		$scope.fd.append("file", files[0]);
+		console.log($scope.fd.get("file"));
+	}
+
 	$scope.go_back = function() {
 		$window.history.back();
+	}
+
+	$scope.feedback = function(submission) {
+		var feedback_text = $scope.feedback['feedback_'+submission]
+		console.log("SubmissionID: " + submission +"; " + feedback_text);
+
+		$http.post('/api/submission/'+submission+'/feedback', {'feedback': feedback_text })
+			.then(function(success) {
+				console.log(success);
+			}, function(error) {
+				console.log(error);
+			})
+		$route.reload();
+	}
+
+	$scope.complete = function() {
+		$http.post('/api/project/'+$scope.project.ProjectID+'/complete')
+			.then(function(success) {
+				console.log(success);
+				$location.path('/home');
+			}, function(error) {
+				console.log(error);
+			})
 	}
 
 }]);

@@ -68,6 +68,8 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 			templateUrl: 'static/partials/login.html',
 			controller: 'HomeController'
 		})
+		.when('/static/files/:file_name', {
+		})
 		.otherwise({
 			redirectTo: '/'
 		})

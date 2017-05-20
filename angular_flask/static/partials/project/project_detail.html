@@ -14,7 +14,7 @@
 
         <h2>${{ project.payment }}</h2>
       </div>
-  		<div class="col-md-2 pull-right" ng-if="eligible && ((showApplication && !hasApplied) || data[0].application_status === 'cancelled')">
+  		<div class="col-md-2 pull-right" ng-if="!projectOngoing && eligible && ((showApplication && !hasApplied) || data[0].application_status === 'cancelled')">
         <form ng-submit="apply()">
           <input class="btn btn-success header-button" type="submit" value="Apply">
         </form>
@@ -35,6 +35,12 @@
           <input class="btn btn-link header-button" type="submit" value="Accepted" disabled="true">
         </form>
       </div>
+      <div class="col-md-2 pull-right" ng-if="showApplication && hasApplied && data[0].application_status === 'completed'">
+        <form>
+          <input class="btn btn-link header-button" type="submit" value="Project completed!" disabled="true">
+        </form>
+      </div>
+
   	</div>
     <hr />
 
@@ -66,19 +72,68 @@
       </div>
     </div>
 
-    <div class="row" ng-if="showApplication && hasApplied && data[0].application_status === 'accepted'">
+    <div class="row" ng-if="engagedApplicant.UserID === currentUser && showApplication && hasApplied && data[0].application_status === 'accepted'">
+     <hr />
       <div class="col-md-2">
       </div>
       <div class="col-md-8">
+        <div>
+          <h4> Submissions </h4>
+          <div class="applicant-row" ng-repeat="submission in submissions">
+            <!-- {{ submission }} -->
+            <div class="container submission-tile">
+              <a target="_self" download="{{ submission.item }}" href="/static/files/{{ submission.item }}"><span></span></a>
+              <div class="row">
+                <div class="col-md-2">
+                  {{ submission.date }}
+                </div>
+                <div class="col-md-8">
+                  <p class="submission-desc">
+                    {{ submission.description }}
+                  <p>
+                </div>
+                <div class="col-md-2">
+                  <i class="fa fa-download" aria-hidden="true"></i>
+                </div>
+              </div>
+              <hr />
+              <div class="row">
+                <div class="col-md-2">
+                  Feedback
+                </div>
+                <div class="col-md-10">
+                  {{ submission.feedback }}
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <h4> Submit Work</h4>
-        <form name="form">
-          <input type="file" class="button" ngf-select ng-model="file" name="file">
-        </form>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div ng-if="engagedApplicant.UserID === currentUser && showApplication && hasApplied && data[0].application_status === 'accepted'">
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <h4> Submit Work</h4>
+        </div>
+        <div class="col-md-2"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+          <form ng-controller="ProjectDetailController" ng-submit="submit_work()">
+            <input id="file" type="file" onchange="angular.element(this).scope().add_file(this.files)" class="form-control button file-upload" ng-model="formData.file" name="file" required>
+            <textarea id="work_description" class="vertical-textarea form-control" ng-model="formData.work_description" placeholder="Description" required></textarea>
+            <input type="submit" class="btn btn-primary header-button pull-right">
+          </form>
+        </div>
+        <div class="col-md-2"></div>
+
       </div>
     </div>
   </div>
-
   <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && !projectOngoing">
     <div class="row">
       <h2>Applicants</h2>
@@ -101,14 +156,18 @@
           <form ng-if="applicant.status === 'unsuccessful'">
             <input  class="btn btn-link pull-right top-layer" type="submit" value="Unsuccessful" disabled="true">
           </form>
-
         </div>
       </div>
     </div>
   </div>
   <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && projectOngoing">
     <div class="row">
-      <h2>Work Details</h2>
+      <div class="col-md-10">
+        <h2>Work Details</h2>
+      </div>
+      <div class="col-md-2">
+        <input ng-click="complete()" type="submit" class="btn header-button btn-success pull-right" value="Complete Project">
+      </div>
     </div>
     <div class="applicant-table">
 
@@ -119,6 +178,48 @@
           <form>
             <input  class="btn btn-link pull-right top-layer" type="submit" value="Accepted" disabled="true">
           </form>
+        </div>
+      </div>
+      <div>
+        <div class="applicant-row" ng-repeat="submission in submissions">
+          <!-- {{ submission }} -->
+          <div class="container submission-tile">
+            <a target="_self" download="{{ submission.item }}" href="/static/files/{{ submission.item }}"><span></span></a>
+            <div class="row">
+              <div class="col-md-2">
+                <p class="submission-desc">
+                  {{ submission.date }}
+                </p>
+              </div>
+              <div class="col-md-8">
+                <p class="submission-desc">
+                  {{ submission.description }}
+                <p>
+              </div>
+              <div class="col-md-2">
+                <i class="fa fa-download" aria-hidden="true"></i>
+              </div>
+            </div>
+            <hr />
+            <form ng-submit="feedback(submission.SubmissionID)">
+              <div class="row zindex-9">
+                <div class="col-md-10">
+                  <p class="submission-feedback-head">
+                    Feedback
+                  </p>
+                </div>
+
+                <div class="col-md-2 zindex-9">
+                    <input type="submit" class="btn btn-primary pull-right">
+                </div>
+              </div>
+              <div class="row zindex-9">
+                <div class="col-md-12 zindex-9">
+                  <textarea id="feedback" name="feedback.feedback_{{submission.SubmissionID}}" class="submission-desc big-textarea form-control" ng-model="feedback['feedback_'+submission.SubmissionID]">{{ submission.feedback }}</textarea>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

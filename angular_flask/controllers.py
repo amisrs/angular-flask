@@ -11,8 +11,17 @@ from angular_flask import app
 # routing for API endpoints, generated from the models designated as API_MODELS
 from angular_flask.core import api_manager
 from angular_flask.models import *
+from werkzeug.utils import secure_filename
 
 from flask.json import JSONEncoder
+import datetime
+import time
+
+UPLOAD_FOLDER = os.path.dirname(os.path.realpath(__file__))+'/static/files'
+print UPLOAD_FOLDER
+
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','psd'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -38,6 +47,9 @@ for model_name in app.config['API_MODELS']:
 
 api_session = api_manager.session
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # routing for basic pages (pass routing onto the Angular app)
 @app.route('/')
@@ -51,7 +63,6 @@ api_session = api_manager.session
 @app.route('/student/<student_id>')
 @app.route('/register')
 @app.route('/project/<project_id>')
-
 def basic_pages(**kwargs):
     return make_response(open('angular_flask/templates/index.html').read())
 
@@ -69,6 +80,7 @@ def admin_pages(**kwargs):
         return make_response(open('angular_flask/templates/index.html').read())
     else:
         return redirect('/')
+
 # routing for CRUD-style endpoints
 # passes routing onto the angular frontend if the requested resource exists
 from sqlalchemy.sql import exists
@@ -516,6 +528,99 @@ def get_application_status(project_id, student_id):
         db.session.commit()
 
         return "OK"
+
+
+@app.route('/api/project/<project_id>/submit', methods=['GET'])
+def get_submissions(project_id):
+    if 'logged_in' in session:
+        logged_in_user = session['logged_in']
+    else:
+        return "Not logged in."
+
+    project = Project.query.filter(Project.ProjectID == project_id).first()
+
+    joined_item = {}
+
+    student_join = db.session.query(User, Student).join(Student)\
+        .filter(Student.UserID == logged_in_user['UserID']).all()
+
+    print student_join
+    for (user, student) in student_join:
+        joined_item['StudentID'] = student.StudentID
+        joined_item['FirstName'] = user.FirstName
+        joined_item['LastName'] = user.LastName
+        joined_item['UserID'] = user.UserID
+        joined_item['login'] = user.login
+
+    submissions = Submission.query\
+        .filter(Submission.StudentID == project.StudentID)\
+        .filter(Submission.ProjectID == project_id).all()
+    return str(submissions)
+
+@app.route('/api/project/<project_id>/submit', methods=['POST'])
+def submit_work(project_id):
+    print request.form
+    if 'logged_in' in session:
+        logged_in_user = session['logged_in']
+    else:
+        return "Not logged in."
+
+    joined_item = {}
+
+    student_join = db.session.query(User, Student).join(Student)\
+        .filter(Student.UserID == logged_in_user['UserID']).all()
+
+    print student_join
+    for (user, student) in student_join:
+        joined_item['StudentID'] = student.StudentID
+        joined_item['FirstName'] = user.FirstName
+        joined_item['LastName'] = user.LastName
+        joined_item['UserID'] = user.UserID
+        joined_item['login'] = user.login
+
+
+    if 'file' not in request.files:
+        return "Missing file."
+    work_file = request.files['file']
+    if work_file.filename == '':
+        return "Missing file."
+    json_data = request.get_json()
+    print joined_item['StudentID']
+    print request.form['description']
+    print datetime.datetime.now()
+    print work_file
+    new_name = str(joined_item['StudentID'])+'_'+str(project_id)+'_'+str(int(time.time()))+'_'+work_file.filename
+    if work_file and allowed_file(work_file.filename):
+        filename = secure_filename(new_name)
+        work_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+    new_submission = Submission(None, project_id, joined_item['StudentID'], None, request.form['description'], datetime.datetime.now(), new_name)
+    # new_project = Project(None, sponsor.SponsorID, None, json_data['title'], json_data['description'], json_data['category'], 'open', json_data['deliverables'], json_data['requirements'], json_data['payment'])
+    db.session.add(new_submission)
+    db.session.commit()
+    return str(new_submission)
+
+@app.route('/api/project/<project_id>/complete', methods=['POST'])
+def complete_project(project_id):
+    project = Project.query.filter(Project.ProjectID == project_id).first()
+    project.status = "completed"
+
+    application = Application.query\
+        .filter(Application.ProjectID == project_id)\
+        .filter(Application.StudentID == project.StudentID).first()
+    application.application_status = "completed"
+    db.session.commit()
+    return "OK"
+
+@app.route('/api/submission/<submission_id>/feedback', methods=['POST'])
+def give_feedback(submission_id):
+    json_data = request.get_json()
+    submission = Submission.query.filter(Submission.SubmissionID == submission_id).first()
+    submission.feedback = json_data['feedback']
+    db.session.add(submission)
+    db.session.commit()
+    return str(submission)
+
 
 # @app.route('/api/sponsor/<user_id>/project', methods=['GET'])
 # def get_sponsor_projects(user_id):

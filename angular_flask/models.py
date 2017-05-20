@@ -264,7 +264,7 @@ class Submission(db.Model):
     feedback = db.Column(db.String(2000))
     description = db.Column(db.String(2000))
     date = db.Column(db.Date)
-    item = db.Column(db.BLOB)
+    item = db.Column(db.String(255))
 
     def __call__(arg1, arg2, arg3):
         print "call submission"
@@ -287,8 +287,8 @@ class Submission(db.Model):
             'StudentID': self.StudentID,
             'feedback': self.feedback,
             'description': self.description,
-            'date': self.date,
-            'item': self.item
+            'date': str(self.date),
+            'item': str(self.item)
         })
 
 # models for which we want to create API endpoints
