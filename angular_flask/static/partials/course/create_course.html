@@ -1,21 +1,34 @@
-<div>
-  <form ng_submit="create_course()">
-    <p>
-      Title <input type="text" name="title" ng-model="title" required>
-    </p>
-    <p>
-      Description <input type="text" name="description" ng-model="description" required>
-    </p>
-    <p>
-      Category <input type="text" name="category" ng-model="category" required>
-    </p>
-    <p>
-      Header <input type="text" name="header_image" ng-model="header_image" required>
-    </p>
+<div class="container-fluid" >
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <h1> New Course </h1>
+    </div>
+  </div>
 
-    <p>
-      Content <textarea id="content" class="form-control vertical-textarea" type="text" name="content" ng-model="content" placeholder="Content" required></textarea>
-    </p>
-    <input type="submit" value="Create">
-  </form>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+
+      <form ng_submit="create_course()">
+        <p>
+          Title <input type="text" class="form-control" name="title" ng-model="title" required>
+        </p>
+        <p>
+          Description <input type="text" class="form-control" name="description" ng-model="description" required>
+        </p>
+        <p>
+          Category <input type="text" class="form-control" name="category" ng-model="category" required>
+        </p>
+        <p>
+          Header <input type="text" class="form-control" name="header_image" ng-model="header_image" required>
+        </p>
+
+        <p>
+          Content <textarea id="content" class="form-control vertical-textarea" type="text" name="content" ng-model="content" placeholder="Content" required></textarea>
+        </p>
+        <input class="btn btn-primary pull-right" type="submit" value="Create">
+      </form>
+    </div>
+  </div>
 </div>

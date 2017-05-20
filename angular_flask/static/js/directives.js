@@ -3,7 +3,7 @@
 /* Directives */
 
 angular.module('angularDirectives', [])
-.controller('login-controller', ['$scope', '$window', '$location', '$route', function($scope, $window, $location, $route) {
+.controller('login-controller', ['$scope', '$window', '$location', '$route', '$http', function($scope, $window, $location, $route, $http) {
   console.log('login-controller')
   console.log($location.path());
   $scope.showNavbar = true;
@@ -34,6 +34,32 @@ angular.module('angularDirectives', [])
     console.log("on login change");
     updateLogin();
   })
+
+  $scope.profile = function() {
+    console.log("profile");
+    if($window.sessionStorage.logged_in_status === 'true') {
+      var user = JSON.parse($window.sessionStorage.logged_in);
+      console.log(user);
+      if(user.userType === 'admin') {
+        $location.path('/admin');
+      } else if(user.userType === 'student') {
+        $http.get('/api/user/'+user.UserID+'/student')
+          .then(function(success) {
+            $location.path('/student/'+success.data.StudentID);
+          }, function(error) {
+            console.log(error);
+          });
+
+
+      } else if(user.userType === 'supervisor') {
+        $location.path('/students');
+      } else if(user.userType ==='sponsor') {
+        $location.path('/project');
+      }
+    } else {
+      $location.path('/login');
+    }
+  }
 }])
 .directive('customNgLogin', function() {
   console.log('login directive')
@@ -69,7 +95,7 @@ angular.module('angularDirectives', [])
 .directive('studentTable', function() {
   return {
     restrict: 'E',
-    template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>First Name</th><th>Last Name</th><th>Ongoing Courses</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
+    template: "<table class=\"table\"><thead><tr><th>#</th><th>Username</th><th>First Name</th><th>Last Name</th><th>Ongoing Courses</th><th>Profile</th></tr><thead><tbody><tr ng-repeat=\"student in students\" ng-include src=\"'static/partials/student_row.html'\"></tr></tbody></table>"
   }
 })
 .directive('disableAnimation', function($animate){

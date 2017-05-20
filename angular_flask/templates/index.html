@@ -49,15 +49,14 @@
 		<div class="container-fluid" ng-controller="login-controller">
 			<div class="row">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="/home">Git Gud</a>
+					<a class="my-brand" href="/home">Git Gud</a>
 				</div>
 				<div ng-if="logged_in_status === 'false'" class="navbar-header pull-right"><a class="navbar-brand" href="/login">Login</a></div>
 
 				<div ng-if="logged_in_status === 'true'" class="dropdown pull-right">
-				  <button class="dropbtn"><i class="fa fa-user-circle" aria-hidden="true"></i></button>
+				  <button ng-click="profile()" class="dropbtn"><i class="fa fa-user-circle" aria-hidden="true"></i></button>
 				  <div class="dropdown-content">
 				    <a href="/home">Home <i class="pull-right fa fa-home" aria-hidden="true"></i></a>
-				    <a href="#">Link 2</a>
 				    <a href="/logout">Logout <i class="pull-right fa fa-sign-out" aria-hidden="true"></i></a>
 				  </div>
 				</div>

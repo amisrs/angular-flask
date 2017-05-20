@@ -290,6 +290,7 @@
 .cardback-payment {
   position: absolute;
   right: 0px;
+  top: 0px;
   z-index: 999;
   padding:12px;
   margin: 8px;
@@ -505,6 +506,21 @@
 	height: 100%;
 }
 
+.my-brand {
+  color: #F2F2F2;
+  margin-left:8px;
+  text-decoration: none;
+  float: left;
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+a.my-brand:hover, a.my-brand:focus {
+  color:#FFFFFF;
+  text-decoration: none;
+}
 .vertical-textarea {
 	resize: vertical;
 }

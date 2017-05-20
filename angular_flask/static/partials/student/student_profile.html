@@ -1,15 +1,38 @@
 <!-- <a class="btn btn-link" href="/student/">back</a> -->
 <!-- <p><a href="/course/">back</a></p> -->
-<a class="btn btn-link" ng-click="go_back()">back</a>
+<div class="top-pane">
+  <div class="container">
+    <h1> {{ student.FirstName }} {{ student.LastName}} </h1>
+  </div>
+</div>
 
 <div class="container">
-	<div class="row">
-		<div class="col-md-10">
-			<h2>{{ student.FirstName }} {{ student.LastName}}</h2>
-		</div>
-	<div class="row">
-		<div class="col-md-12">
-			<h4>completed courses/projects</h4>
+	<h4> Completed Projects </h4>
+	<hr />
+
+	<div ng-controller="ProjectListStudentController" class="row">
+		<div class="col-md-4 panel-body" ng-repeat="project in completed_projects | orderBy: 'id':true ">
+			<div ng-include src="'static/partials/project/project_tile.html'"></div>
 		</div>
 	</div>
+	<div ng-if="completed_projects.length === 0">
+		<div class="col-md-12 big-page empty-message">
+			<p> You haven't completed any projects! </p>
+		</div>
+	</div>
+
+	<h4> Completed Courses </h4>
+	<hr />
+	<div ng-controller="EnrolledCourseListController" class="row">
+		<div class="col-md-4" ng-repeat="course in completed_courses | orderBy: 'id':true ">
+			<div ng-include src="'static/partials/course/course_tile.html'"></div>
+		</div>
+	</div>
+	<div ng-if="completed_courses.length === 0">
+		<div class="col-md-12 big-page empty-message">
+			<p> You haven't completed any courses! </p>
+		</div>
+	</div>
+
+
 </div>

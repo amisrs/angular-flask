@@ -70,6 +70,9 @@ angular.module('AngularFlask', ['angularFlaskServices', 'angularDirectives', 'ng
 		})
 		.when('/static/files/:file_name', {
 		})
+		.when('/profile', {
+			controller: 'ProfileRedirectController'
+		})
 		.otherwise({
 			redirectTo: '/'
 		})

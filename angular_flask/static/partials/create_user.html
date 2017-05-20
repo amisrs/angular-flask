@@ -1,14 +1,26 @@
-<div>
-  <form ng_submit="create_user()">
-    <p>
-      Username <input type="text" name="username" ng-model="username" required>
-    </p>
-    <p>
-      Password <input type="password" name="password" ng-model="password" required>
-    </p>
-    <p>
-      User Type <input type="text" name="userType" ng-model="userType" required>
-    </p>
-    <input type="submit" value="Create">
-  </form>
+<div class="container-fluid" >
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <h1> New User </h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+
+      <form ng_submit="create_user()">
+        <p>
+          Username <input type="text" class="form-control" name="username" ng-model="username" required>
+        </p>
+        <p>
+          Password <input type="password" class="form-control" name="password" ng-model="password" required>
+        </p>
+        <p>
+          User Type <input type="text" class="form-control" name="userType" ng-model="userType" required>
+        </p>
+        <input class="btn btn-primary pull-right" type="submit" value="Create">
+      </form>
+    </div>
+  </div>
 </div>

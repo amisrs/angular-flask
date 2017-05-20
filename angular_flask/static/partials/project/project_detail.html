@@ -8,7 +8,7 @@
       </div>
   		<div class="col-md-6">
 
-  			<h2>{{ project.title }}</h2>
+  			<h2>{{ project.title }} </h2><h4> by {{ sponsor.login }} </h4>
   		</div>
       <div class="col-md-2">
 
@@ -43,36 +43,46 @@
 
   	</div>
     <hr />
+    <form ng-submit="update()">
+      <div class="row">
+        <div class="col-md-2">
+        </div>
 
-    <div class="row">
-      <div class="col-md-2">
+    		<div class="col-md-8">
+    			<h4>Description</h4>
+          <textarea name="description" ng-model="project.description" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.description }}</textarea>
+    		</div>
+    	</div>
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+
+    		<div class="col-md-8">
+    			<h4>Deliverables</h4>
+          <textarea name="deliverables" ng-model="project.deliverables" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.deliverables }}</textarea>
+    		</div>
+    	</div>
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+
+        <div class="col-md-8">
+          <h4>Prerequisites</h4>
+          <textarea name="prerequisites" ng-model="project.requirements" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.requirements }}</textarea>
+        </div>
       </div>
 
-  		<div class="col-md-8">
-  			<h4>Description</h4>
-        <textarea class="big-textarea form-control" readonly="true">{{ project.description }}</textarea>
-  		</div>
-  	</div>
-    <div class="row">
-      <div class="col-md-2">
+      <div class="row" ng-if="userType === 'sponsor' && sponsor.UserID === currentUser.UserID">
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-8">
+          <input type="submit" class="btn btn-primary header-button pull-right">
+        </div>
       </div>
+    </form>
 
-  		<div class="col-md-8">
-  			<h4>Deliverables</h4>
-        <textarea class="big-textarea form-control" readonly="true">{{ project.deliverables }}</textarea>
-  		</div>
-  	</div>
-    <div class="row">
-      <div class="col-md-2">
-      </div>
 
-      <div class="col-md-8">
-        <h4>Prerequisites</h4>
-        <textarea class="big-textarea form-control" readonly="true">{{ project.requirements }}</textarea>
-      </div>
-    </div>
-
-    <div class="row" ng-if="engagedApplicant.UserID === currentUser && showApplication && hasApplied && data[0].application_status === 'accepted'">
+    <div class="row" ng-if="engagedApplicant.UserID === currentUser.UserID && showApplication && hasApplied && data[0].application_status === 'accepted'">
      <hr />
       <div class="col-md-2">
       </div>
@@ -112,7 +122,7 @@
       </div>
     </div>
     <hr />
-    <div ng-if="engagedApplicant.UserID === currentUser && showApplication && hasApplied && data[0].application_status === 'accepted'">
+    <div ng-if="engagedApplicant.UserID === currentUser.UserID && showApplication && hasApplied && data[0].application_status === 'accepted'">
       <div class="row">
         <div class="col-md-2"></div>
         <div class="col-md-8">

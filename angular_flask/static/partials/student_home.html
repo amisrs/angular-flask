@@ -24,6 +24,9 @@
 <div class="container" ng-if="currentTab === 3">
   <div ng-controller="ProjectListStudentController">
     <div class="container-fluid">
+      <h4> Ongoing </h4>
+      <hr />
+
     	<div class="row">
     		<div class="col-md-4 panel-body" ng-repeat="project in accepted_projects | orderBy: 'id':true ">
     			<div ng-include src="'static/partials/project/project_tile.html'"></div>
@@ -34,6 +37,19 @@
     			<p> You're not engaged in any projects! </p>
     		</div>
     	</div>
+      <h4> Completed </h4>
+      <hr />
+      <div class="row">
+    		<div class="col-md-4 panel-body" ng-repeat="project in completed_projects | orderBy: 'id':true ">
+    			<div ng-include src="'static/partials/project/project_tile.html'"></div>
+    		</div>
+    	</div>
+    	<div ng-if="completed_projects.length === 0">
+    		<div class="col-md-12 big-page empty-message">
+    			<p> You haven't completed any projects! </p>
+    		</div>
+    	</div>
+
     </div>
   </div>
 </div>

@@ -1,9 +1,37 @@
+<div class="top-pane">
+  <div class="container">
+    <h1> Hello, Admin. </h1>
+  </div>
+</div>
+
 <div class="container">
-  <h1> HELLO ADMIN </h1>
+  <div class="row">
+    <div class="col-md-10">
+      <h4>Users</h4>
+    </div>
+    <div class="col-md-2">
+      <a class="btn btn-primary pull-right" href='admin/create_user'> Create user </a>
+    </div>
+  </div>
+  <hr />
   <div ng-controller="UserListController" ng-include src="'static/partials/user_list.html'"></div>
-  <p><a href='admin/create_user'> Create user </a></p>
+
+  <br />
+  <br />
+  <div class="row">
+    <div class="col-md-10">
+      <h4>Courses</h4>
+    </div>
+    <div class="col-md-2">
+      <a class="btn btn-primary pull-right" href='admin/create_course'> Create course </a>
+    </div>
+  </div>
+  <hr />
 
   <!--<div ng-controller="AllCourseListController" ng-include src="'static/partials/all_courses_list.html'"></div>-->
-  <all-carousel ng-controller="AllCourseListController"></all-carousel>
-  <p><a href='admin/create_course'> Create course </a></p>
+  <div ng-controller="AllCourseListController">
+    <div class="col-md-4 panel-body" ng-repeat="course in courses | orderBy: 'id':true ">
+      <div ng-include src="'static/partials/course/course_tile.html'"></div>
+    </div>
+
 </div>

@@ -72,10 +72,16 @@ app.controller('CreateCourseController', ['$scope', '$http', '$location', '$wind
 			})
 	}
 }])
-.controller('EnrolledCourseListController', ['$scope', '$http', '$location', '$window', function ($scope, $http, $location, $window) {
+.controller('EnrolledCourseListController', ['$scope', '$http', '$location', '$window', '$routeParams', function ($scope, $http, $location, $window, $routeParams) {
+	var user = JSON.parse($window.sessionStorage.logged_in);
 	if($window.sessionStorage.logged_in_status === 'true') {
+		console.log("ROUITEPARAMS:" + $routeParams.StudentID);
 		console.log(JSON.parse($window.sessionStorage.logged_in).UserID);
-		var enrolled_course_endpoint = '/api/user/' + JSON.parse($window.sessionStorage.logged_in).UserID + '/course';
+		if(!$routeParams.StudentID) {
+			var enrolled_course_endpoint = '/api/user/' + user.UserID + '/course';
+		} else {
+			var enrolled_course_endpoint = '/api/student/' + $routeParams.StudentID + '/course';
+		}
 
 		$http.get(enrolled_course_endpoint)
 			.then(function(success) {

@@ -119,8 +119,10 @@ def login():
             session['logged_in'] = user
             status = True
         else:
-            session['logged_in'] = None
+            # session['logged_in'] = None
             status = False
+            return "failed"
+
         return jsonify({
             'result': status,
             'user': session['logged_in']
@@ -185,13 +187,34 @@ def create_user():
 
 # probably change these to /api/student
 @app.route('/api/user/<user_id>/course', methods=['GET'])
-def get_enrolled_courses(user_id):
+def get_enrolled_courses_user(user_id):
     result = []
     ongoing_courses = []
     completed_courses = []
 
     print "controllers.py - getting enrolled courses"
     student = Student.query.filter(Student.UserID == user_id).first()
+    enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
+    for enrolment in enrolled_courses:
+        print 'student ' + str(student.StudentID) + ' enrolled in ' + str(enrolment)
+        course = Course.query.filter(Course.CourseID == enrolment.CourseID).first();
+
+        if enrolment.status != 'completed':
+            ongoing_courses.append(course)
+        else:
+            completed_courses.append(course)
+    result.append(ongoing_courses)
+    result.append(completed_courses)
+    return str(result)
+
+@app.route('/api/student/<student_id>/course', methods=['GET'])
+def get_enrolled_courses(student_id):
+    result = []
+    ongoing_courses = []
+    completed_courses = []
+
+    print "controllers.py - getting enrolled courses"
+    student = Student.query.filter(Student.StudentID == student_id).first()
     enrolled_courses = Enrolment.query.filter(Enrolment.StudentID == student.StudentID).all()
     for enrolment in enrolled_courses:
         print 'student ' + str(student.StudentID) + ' enrolled in ' + str(enrolment)
@@ -288,33 +311,66 @@ def get_student_by_id(student_id):
 @app.route('/api/student/<student_id>/project', methods=['GET'])
 def get_accepted_projects(student_id):
     result = []
+
     my_projects = []
     print "student_id: " + str(student_id)
     student = Student.query.filter(Student.StudentID == student_id).first()
-    accepted_projects = Application.query.filter(Application.StudentID == student.StudentID).all()
+    accepted_projects = Application.query\
+        .filter(Application.StudentID == student.StudentID)\
+        .filter(Application.application_status == 'accepted')\
+        .all()
     for application in accepted_projects:
         print 'student ' + str(student.StudentID) + ' accepted in ' + str(application)
-        project = Project.query.filter(Project.ProjectID == application.ProjectID).first();
+        project = Project.query.filter(Project.ProjectID == application.ProjectID).first()
         my_projects.append(project)
     result.append(my_projects)
 
-    all_projects = Project.query.all()
+
+    all_projects = Project.query\
+        .filter(Project.status != 'ongoing')\
+        .filter(Project.status != 'completed').all()
     other_projects = []
     for proj in all_projects:
         if proj not in my_projects:
             other_projects.append(proj)
     result.append(other_projects)
 
+    completed_projects = []
+    completed_apps_query = Application.query\
+        .filter(Application.StudentID == student.StudentID)\
+        .filter(Application.application_status == 'completed')\
+        .all()
+    for completed_app in completed_apps_query:
+        completed_proj = Project.query.filter(Project.ProjectID == completed_app.ProjectID).first()
+        completed_projects.append(completed_proj)
+    result.append(completed_projects)
     return str(result)
 
 #return a list of students for this supervisor
 @app.route('/api/supervisor/<user_id>/student', methods=['GET'])
 def get_supervisor_students(user_id):
-    students = []
+    students_list = []
     supervisor = Supervisor.query.filter(Supervisor.UserID == user_id).first()
-    students = db.session.query(User).join(Student).filter(Student.SupervisorID == supervisor.SupervisorID).all()
-    print str(students)
-    return str(students)
+    students = db.session.query(Student).filter(Student.SupervisorID == supervisor.SupervisorID).all()
+
+    for student in students:
+        joined_item = {}
+
+        student_join = db.session.query(User, Student).join(Student)\
+            .filter(Student.StudentID == student.StudentID).all()
+
+        for (user, s) in student_join:
+            joined_item['StudentID'] = s.StudentID
+            joined_item['FirstName'] = user.FirstName
+            joined_item['LastName'] = user.LastName
+            joined_item['UserID'] = user.UserID
+            joined_item['login'] = user.login
+
+        students_list.append((joined_item))
+
+
+    print str(students_list)
+    return json.dumps(students_list)
 
 @app.route('/api/course/', methods=['GET'])
 def get_courses():
@@ -386,6 +442,28 @@ def unenrol(courseid):
         db.session.commit()
     return "OK"
 
+@app.route('/api/sponsors/<sponsor_id>', methods=['GET'])
+def get_sponsor_by_id(sponsor_id):
+    print "trigger api sponsor"
+    # print "api student: " + str(student)
+    joined_item = {}
+
+    sponsor_join = db.session.query(User, Sponsor).join(Sponsor)\
+        .filter(Sponsor.SponsorID == sponsor_id).all()
+
+    print sponsor_join
+    for (user, sponsor) in sponsor_join:
+        joined_item['SponsorID'] = sponsor.SponsorID
+        joined_item['FirstName'] = user.FirstName
+        joined_item['LastName'] = user.LastName
+        joined_item['UserID'] = user.UserID
+        joined_item['login'] = user.login
+    # print "JOINED ITEM: " + json.dumps(student_join)
+
+    print str(joined_item)
+    return json.dumps(joined_item), 200, {'Content-Type': 'application/json; charset=utf-8'}
+
+
 @app.route('/api/sponsor/<sponsor_id>/project', methods=['GET'])
 def get_sponsor_projects(sponsor_id):
     projects = Project.query.filter(Project.SponsorID == sponsor_id).all()
@@ -422,7 +500,7 @@ def create_project():
             return "Incorrect user type."
     else:
         return "Not logged in."
-    new_project = Project(None, sponsor.SponsorID, None, json_data['title'], json_data['description'], json_data['category'], 'open', json_data['deliverables'], json_data['requirements'], json_data['payment'])
+    new_project = Project(None, sponsor.SponsorID, None, json_data['title'], json_data['description'], json_data['category'], 'open', json_data['deliverables'], json_data['requirements'], json_data['payment'], json_data['thumbnail'])
     db.session.add(new_project)
     db.session.commit()
     return "OK"
@@ -433,6 +511,16 @@ def get_project(project_id):
     project = Project.query.filter(Project.ProjectID == project_id).first()
     print str(project)
     return str(project)
+
+@app.route('/api/project/<project_id>/update', methods=['POST'])
+def update_project(project_id):
+    json_data = request.get_json()
+    project = Project.query.filter(Project.ProjectID == project_id).first()
+    project.description = json_data['description']
+    project.deliverables = json_data['deliverables']
+    project.prerequisites = json_data['prerequisites']
+    db.session.commit()
+    return "OK"
 
 #enrol with currently logged in user
 @app.route('/api/project/<project_id>/apply', methods=['POST', 'GET'])

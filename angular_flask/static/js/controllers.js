@@ -28,6 +28,29 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		$location.path('/login');
 	}
 }])
+.controller('ProfileRedirectController', ['$scope', '$location', '$window', function($scope, $location, $window) {
+	if($window.sessionStorage.logged_in_status === 'true') {
+		var user = JSON.parse($window.sessionStorage.logged_in);
+		if(user.userType === 'admin') {
+			$location.path('/admin');
+		} else if(user.userType === 'student') {
+			$http.get('/api/user/'+user.UserID+'/student')
+				.then(function(success) {
+					$location.path('/student/'+success.data.StudentID);
+				}, function(error) {
+					console.log(error);
+				});
+
+
+		} else if(user.userType === 'supervisor') {
+			$location.path('/students');
+		} else if(user.userType ==='sponsor') {
+			$location.path('/project');
+		}
+	} else {
+		$location.path('/login');
+	}
+}])
 .controller('SponsorHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - SponsorHomeController: phoning home...");
 	$scope.isShowingNew = false;
@@ -54,9 +77,11 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 		var deliverables = $scope.deliverables;
 		var requirements = $scope.requirements;
 		var payment = $scope.payment;
+		var thumbnail = $scope.thumbnail;
+
 		console.log("PAYMENT: "+payment);
 		//http post
-		$http.post('/api/project/create', {'title': title, 'description': description, 'category': category, 'deliverables': deliverables, 'requirements': requirements, 'payment': payment})
+		$http.post('/api/project/create', {'title': title, 'description': description, 'category': category, 'deliverables': deliverables, 'requirements': requirements, 'payment': payment, 'thumbnail': thumbnail})
 			.then(function(success) {
 				$location.path("/home");
 			}, function(error) {
@@ -66,7 +91,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 }])
 .controller('StudentHomeController', ['$scope', '$location', '$window', function ($scope, $location, $window) {
 	console.log("controllers.js - StudentHomeController: phoning home...");
-	
+
 	$scope.student = JSON.parse($window.sessionStorage.logged_in);
 	$scope.currentTab = 1;
 	$scope.switch = function(tab) {
@@ -77,6 +102,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 .controller('SupervisorHomeController', ['$scope', '$location', '$window', function($scope, $location, $window) {
 	console.log("controllers.js - SupervisorHomeController: phoning home...");
 	$scope.isShowingNew = false;
+	$scope.supervisor = JSON.parse($window.sessionStorage.logged_in);
 
 	$scope.showNew = function() {
 		console.log("SHOW NEW");
@@ -122,12 +148,17 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 
 		$http.post('/api/login', {'username': username, 'password': password})
 		.then(function(success) {
-				$window.sessionStorage.setItem("logged_in", JSON.stringify(success.data.user));
-				console.log("controllers.js - LoginController: Setting localstorage user: " + $window.sessionStorage.logged_in);
-				$window.sessionStorage.setItem("logged_in_status", true)
+				if(success.data != 'failed') {
+					$window.sessionStorage.setItem("logged_in", JSON.stringify(success.data.user));
+					console.log("controllers.js - LoginController: Setting localstorage user: " + $window.sessionStorage.logged_in);
+					$window.sessionStorage.setItem("logged_in_status", true)
 
-				$rootScope.$broadcast('login-change');
-				$location.path('/home')
+					$rootScope.$broadcast('login-change');
+					$location.path('/home')
+				} else {
+					console.log("failed");
+					alert("Invalid login.");
+				}
 		}, function(error) {
 				console.log(error);
 		})
@@ -225,7 +256,7 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 				.then(function(success) {
 					console.log("enroleld courses for: " + current_student.login);
 					console.log(success.data);
-					current_student.enrolled_courses = success.data;
+					current_student.enrolled_courses = success.data[0];
 				}, function(error) {
 					console.log(error);
 				});

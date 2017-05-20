@@ -55,6 +55,7 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 				.then(function(success) {
 					$scope.accepted_projects = success.data[0];
 					$scope.other_projects = success.data[1];
+					$scope.completed_projects = success.data[2];
 				}, function(error) {
 					console.log(error);
 				})
@@ -68,7 +69,10 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 	$scope.showApplication = false;
 	$scope.projectOngoing = false;
 	var userType = JSON.parse($window.sessionStorage.logged_in).userType;
-	$scope.currentUser = JSON.parse($window.sessionStorage.logged_in).UserID;
+	$scope.currentUser = JSON.parse($window.sessionStorage.logged_in);
+
+
+
 	$scope.userType = userType;
 	if(userType === 'student') {
 		console.log("show appl");
@@ -99,6 +103,18 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 			console.log(error);
 		});
 
+	$scope.update = function() {
+		var description = $scope.project.description;
+		var deliverables = $scope.project.deliverables;
+		var prerequisites = $scope.project.requirements;
+
+		$http.post('/api/project/'+$scope.project.ProjectID+'/update', { 'description': description, 'deliverables': deliverables, 'prerequisites': prerequisites })
+			.then(function(success) {
+				$route.reload();
+			}, function(error) {
+				console.log(error);
+			});
+	}
 
   var get_application_for_student = function(studentId) {
 		console.log("studentId: " + studentId);
@@ -126,10 +142,17 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 			if($scope.project.status === "ongoing") {
 				$scope.projectOngoing = true;
 				get_student_user($scope.project.StudentID);
-
 			}
+
+			$http.get('/api/sponsors/'+$scope.project.SponsorID)
+				.then(function(success) {
+					$scope.sponsor = success.data;
+				}, function(error) {
+					console.log(error)
+				});
+
 		}, function(error) {
-			console.log(status);
+			console.log(error);
 		});
 
 	var get_student_user = function(StudentID) {
