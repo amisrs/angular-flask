@@ -48,18 +48,29 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 		})
 }])
 .controller('ProjectListStudentController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
+    if($routeParams.StudentID) {
+    	$http.get('/api/student/'+$routeParams.StudentID+'/project')
+	    	.then(function(success) {
+	    		$scope.accepted_projects = success.data[0];
+	    		$scope.other_projects = success.data[1];
+	    		$scope.completed_projects = success.data[2];
+	    	}, function(error) {
+	    		console.log(error);
+	    	})
+    } else {
 
-	$http.get('/api/user/'+JSON.parse($window.sessionStorage.logged_in).UserID+'/student')
-		.then(function(success) {
-			$http.get('/api/student/'+success.data.StudentID+'/project')
-				.then(function(success) {
-					$scope.accepted_projects = success.data[0];
-					$scope.other_projects = success.data[1];
-					$scope.completed_projects = success.data[2];
-				}, function(error) {
-					console.log(error);
-				})
-		})
+    	$http.get('/api/user/'+JSON.parse($window.sessionStorage.logged_in).UserID+'/student')
+	    	.then(function(success) {
+		    	$http.get('/api/student/'+success.data.StudentID+'/project')
+			    	.then(function(success) {
+			    		$scope.accepted_projects = success.data[0];
+			    		$scope.other_projects = success.data[1];
+			    		$scope.completed_projects = success.data[2];
+			    	}, function(error) {
+			    		console.log(error);
+			    	})
+	    	})
+    }
 }])
 .controller('ProjectDetailController', ['$scope', '$routeParams', 'Course', '$http', '$window', '$location', '$route', function ($scope, $routeParams, Course, $http, $window, $location, $route) {
 	var project_endpoint = '';
@@ -139,7 +150,7 @@ app.controller('ProjectListController', ['$scope', '$http', '$window', function 
 			console.log("Got project data.");
 			console.log(success);
 			$scope.project = success.data;
-			if($scope.project.status === "ongoing") {
+			if($scope.project.status === "ongoing" || $scope.project.status === "completed") {
 				$scope.projectOngoing = true;
 				get_student_user($scope.project.StudentID);
 			}

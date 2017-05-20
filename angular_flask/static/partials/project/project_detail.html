@@ -50,7 +50,7 @@
 
     		<div class="col-md-8">
     			<h4>Description</h4>
-          <textarea name="description" ng-model="project.description" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.description }}</textarea>
+          <textarea name="description" ng-model="project.description" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID || project.status === 'completed'">{{ project.description }}</textarea>
     		</div>
     	</div>
       <div class="row">
@@ -59,7 +59,7 @@
 
     		<div class="col-md-8">
     			<h4>Deliverables</h4>
-          <textarea name="deliverables" ng-model="project.deliverables" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.deliverables }}</textarea>
+          <textarea name="deliverables" ng-model="project.deliverables" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID || project.status === 'completed'">{{ project.deliverables }}</textarea>
     		</div>
     	</div>
       <div class="row">
@@ -68,11 +68,11 @@
 
         <div class="col-md-8">
           <h4>Prerequisites</h4>
-          <textarea name="prerequisites" ng-model="project.requirements" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID">{{ project.requirements }}</textarea>
+          <textarea name="prerequisites" ng-model="project.requirements" class="big-textarea form-control" ng-readonly="sponsor.UserID !== currentUser.UserID || project.status === 'completed'">{{ project.requirements }}</textarea>
         </div>
       </div>
 
-      <div class="row" ng-if="userType === 'sponsor' && sponsor.UserID === currentUser.UserID">
+      <div class="row" ng-if="userType === 'sponsor' && sponsor.UserID === currentUser.UserID && project.status !== 'completed'">
         <div class="col-md-2">
         </div>
         <div class="col-md-8">
@@ -144,7 +144,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && !projectOngoing">
+  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && !projectOngoing && project.status !== 'completed'">
     <div class="row">
       <h2>Applicants</h2>
     </div>
@@ -170,13 +170,13 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && projectOngoing">
+  <div class="col-md-6 applicant-pane" ng-if="userType === 'sponsor' && projectOngoing || project.status === 'completed'">
     <div class="row">
       <div class="col-md-10">
         <h2>Work Details</h2>
       </div>
       <div class="col-md-2">
-        <input ng-click="complete()" type="submit" class="btn header-button btn-success pull-right" value="Complete Project">
+        <input ng-if="project.status !== 'completed'" ng-click="complete()" type="submit" class="btn header-button btn-success pull-right" value="Complete Project">
       </div>
     </div>
     <div class="applicant-table">
@@ -220,12 +220,12 @@
                 </div>
 
                 <div class="col-md-2 zindex-9">
-                    <input type="submit" class="btn btn-primary pull-right">
+                    <input ng-if="project.status !== 'completed'" type="submit" class="btn btn-primary pull-right">
                 </div>
               </div>
               <div class="row zindex-9">
                 <div class="col-md-12 zindex-9">
-                  <textarea id="feedback" name="feedback.feedback_{{submission.SubmissionID}}" class="submission-desc big-textarea form-control" ng-model="feedback['feedback_'+submission.SubmissionID]">{{ submission.feedback }}</textarea>
+                  <textarea ng-readonly="project.status === 'completed'"id="feedback" name="feedback.feedback_{{submission.SubmissionID}}" class="submission-desc big-textarea form-control" ng-model="feedback['feedback_'+submission.SubmissionID]">{{ submission.feedback }}</textarea>
                 </div>
               </div>
             </form>
